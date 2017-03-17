@@ -1,0 +1,4 @@
+.scrapy
+.aws_credentials.py
+build/*
+**/*.pyc

@@ -1,0 +1,6 @@
+projects:
+  default: 166147
+stacks:
+    default: scrapy:1.1-py3
+version: 1.1
+requirements_file: requirements.txt

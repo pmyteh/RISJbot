@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+from RISJbot.spiders.basespiders import NewsSitemapSpider
+from RISJbot.loaders import NewsLoader
+# Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
+from RISJbot.utils import mutate_selector_del_xpath
+from scrapy.loader.processors import Identity, TakeFirst
+from scrapy.loader.processors import Join, Compose, MapCompose
+
+class $classname(NewsSitemapSpider):
+    name = '$name'
+    # allowed_domains = ['$domain']
+    # A list of XML sitemap files, or suitable robots.txt files with pointers.
+    sitemap_urls = ['https://$domain/robots.txt'] 
+
+    def parse_page(self, response):
+        """@url <newsurl>
+        @returns items 1
+        @scrapes bodytext bylines fetchtime firstpubtime modtime headline
+        @scrapes keywords section source summary url
+        @noscrapes bylines firstpubtime modtime
+        @noscrapes keywords section summary
+        """
+        s = response.selector
+        # Remove any content from the tree before passing it to the loader.
+        # There aren't native scrapy loader/selector methods for this.        
+        #mutate_selector_del_xpath(s, '//*[contains(@class, "classname")]')
+
+        l = NewsLoader(selector=s)
+
+        # Add a number of items of data that should be standardised across
+        # providers. Can override these (for TakeFirst() fields) by making
+        # l.add_* calls above this line, or supplement gaps by making them
+        # below.
+        l.add_fromresponse(response)
+        l.add_htmlmeta()
+        l.add_schemaorg(response)
+        l.add_opengraph()
+        l.add_scrapymeta(response)
+        #l.add_schemaorg_bylines()
+        #l.add_dublincore()
+
+        return l.load_item()
