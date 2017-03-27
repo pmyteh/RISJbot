@@ -176,7 +176,7 @@ class RefetchControl(object):
         l = c.fetchone()
         if l is None:
             # First fetch. Log and return.
-            logger.debug("First fetch: {}".format(r))
+#            logger.debug("First fetch: {}".format(r))
             if self.stats:
                 self.stats.inc_value('refetchcontrol/firstfetch',
                                      spider=spider)
@@ -190,31 +190,32 @@ class RefetchControl(object):
         if (nf >= self.maxfetches or
                tdiff.total_seconds() < self.refetchsecs):
             # No. Drop.
-            logger.debug("Ignoring already visited ({}/{} "
-                         "fetches, last at {}, {:.0f} seconds "
-                         "ago, min secs {}): {}".format(
-                                 nf,
-                                 self.maxfetches,
-                                 t.isoformat(),
-                                 tdiff.total_seconds(),
-                                 self.refetchsecs,
-                                 r,
-                             )
-                        )
+            if nf < self.maxfetches:
+                logger.debug("Not fetching yet ({}/{} "
+                             "fetches, last at {}, {:.0f} seconds "
+                             "ago, min secs {}): {}".format(
+                                     nf,
+                                     self.maxfetches,
+                                     t.isoformat(),
+                                     tdiff.total_seconds(),
+                                     self.refetchsecs,
+                                     r,
+                                 )
+                            )
             if self.stats:
                 self.stats.inc_value('refetchcontrol/skipped',
                                      spider=spider)
             return None
         # Yes. Log, add to stats, return
-        logger.debug("Refetching ({} fetches, "
-                     "last at {}, {:.0f} seconds ago, "
-                     "min secs {}) {}".format(
-                             nf,
-                             t.isoformat(),
-                             tdiff.total_seconds(),
-                             self.refetchsecs,
-                             r,
-                         )
+#        logger.debug("Refetching ({} fetches, "
+#                     "last at {}, {:.0f} seconds ago, "
+#                     "min secs {}) {}".format(
+#                             nf,
+#                             t.isoformat(),
+#                             tdiff.total_seconds(),
+#                             self.refetchsecs,
+#                             r,
+#                         )
                     )
         if self.stats:
             self.stats.inc_value('refetchcontrol/refetched', spider=spider)
