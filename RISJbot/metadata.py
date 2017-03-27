@@ -3,6 +3,7 @@
 from extruct.rdfa import RDFaExtractor
 from extruct.w3cmicrodata import MicrodataExtractor
 from extruct.jsonld import JsonLdExtractor
+from json.decoder import JSONDecodeError
 from pprint import pformat
 import logging
 import re
@@ -17,18 +18,29 @@ class RISJMetadataExtractor(object):
         self.microdata = microdata
         self.jsonld = jsonld
         self.rdfa = rdfa
+
         if rdfa:
-            self.rdfae = RDFaExtractor()
-            self.rdfadata = self.rdfae.extract(self.response.text,
-                                               url=self.response.url)
+            try:
+                self.rdfae = RDFaExtractor()
+                self.rdfadata = self.rdfae.extract(self.response.text,
+                                                   url=self.response.url)
+            except JSONDecodeError:
+                pass
         if microdata:
-            self.mde = MicrodataExtractor()
-            self.mdedata = self.mde.extract(self.response.text)
+            try:
+                self.mde = MicrodataExtractor()
+                self.mdedata = self.mde.extract(self.response.text)
+            except JSONDecodeError:
+                pass
         if jsonld:
-            self.jlde = JsonLdExtractor()
-            self.jldata = self.jlde.extract(self.response.text)
-            # Sometimes we get this in the meta dict from RISJExtractJSONLD
-            self.jldata.extend(self.response.meta.get('json-ld', []))
+            try:
+                self.jlde = JsonLdExtractor()
+                self.jldata = self.jlde.extract(self.response.text)
+            except JSONDecodeError:
+                self.jldata = []
+            finally:
+                # Sometimes we get this in the meta dict from RISJExtractJSONLD
+                self.jldata.extend(self.response.meta.get('json-ld', []))
 
     def extract_newsarticle_schemaorg(self,
                                       microdata=None,
@@ -49,7 +61,7 @@ class RISJMetadataExtractor(object):
         outd = {}
         if jsonld:
             for d in self.jldata:
-                logger.debug('Analysing JSON-LD data: '+pformat(d))
+#                logger.debug('Analysing JSON-LD data: '+pformat(d))
                 try:
                     if (re.match(r'https?://schema.org/?', d['@context']) and
                             d['@type'] == 'NewsArticle'):
@@ -63,5 +75,5 @@ class RISJMetadataExtractor(object):
                     outd.update(d)
         if rdfa:
             raise NotImplementedError
-        logger.debug('Returning schema.org NewsArticle: '+pformat(outd))
+#        logger.debug('Returning schema.org NewsArticle: '+pformat(outd))
         return outd

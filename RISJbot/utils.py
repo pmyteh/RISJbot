@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 def mutate_selector_del_xpath(selector, xpath_str):
     """Under the covers, Selectors contain an lxml.etree.Element document
@@ -25,6 +28,23 @@ def split_multiple_byline_string(s):
             else:
                 yield tok
 
+import scrapy_dotpersistence
+import os
+from scrapy.exceptions import NotConfigured
+# XXX This is all grot.
+class _risj_dotscrapy_indirect(object):
+    @classmethod
+    def from_crawler(cls, crawler):
+        settings = crawler.settings
+        os.environ["SCRAPY_PROJECT_ID"] = "persistence"
+        os.environ["SCRAPY_SPIDER"] = "all-spiders"
+        enabled = (settings.getbool('DOTSCRAPY_ENABLED') or
+                   settings.get('DOTSCRAPYPERSISTENCE_ENABLED'))
+        if not enabled:
+            raise NotConfigured
+        bucket = settings.get('ADDONS_S3_BUCKET')
+        logger.debug('returning DotScrapyPersistence object')
+        return scrapy_dotpersistence.DotScrapyPersistence(crawler, bucket)
 
 #class SelectorXSLTTransformer(object):
 #    def __init__(self, selector):

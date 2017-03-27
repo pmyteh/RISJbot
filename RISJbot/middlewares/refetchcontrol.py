@@ -34,13 +34,13 @@ class RefetchControl(object):
 
     RefetchControl differs from the parent DeltaFetch by offering more general
     control over repeated fetching:
-     * The option of fetching (possibly limited numbers of) copies of an item, 
+     * The option of fetching (limited numbers of) copies of an item, 
        at intervals of not less than a given time. This allows some sane change
        detection.
      * A mechanism for ensuring complete fetches, by trawling RefetchControl's
        database for insufficiently-fetched pages and scheduling them.
 
-    It also depends on twisted.enterprise.adapi and sqlite3 rather than
+    It also depends on twisted.enterprise.adbapi and sqlite3 rather than
     bsddb3.
     """
 
@@ -129,7 +129,7 @@ class RefetchControl(object):
         logger.debug("Resetting RefetchControl database.")
         c.execute("DROP TABLE IF EXISTS records")
         c.execute("DROP INDEX IF EXISTS idx_fetches_time")
-        c.execute("CREATE TABLE records (key bytes UNIQUE, url str, "
+        c.execute("CREATE TABLE records (key bytes, url str, "
                     "fetches int, time timestamp, PRIMARY KEY(key)) "
                     "WITHOUT ROWID")
         c.execute("CREATE INDEX idx_fetches_time ON records (fetches, time)")
@@ -262,28 +262,52 @@ class RefetchControl(object):
             self.stats.inc_value('refetchcontrol/stored', spider=spider)
         returnValue(item)
  
-    @inlineCallbacks
     def process_spider_output(self, response, result, spider):
-        for r in result:
+
+        @inlineCallbacks
+        def _filter(r):
             if isinstance(r, Request):
-#                logger.debug("Is Request: {}".format(r))
                 x = yield self._process_request(r, spider)
-#                logger.debug("Have return value ({}) for {}".format(x, r))
-                if x:
-#                    yield r
-                    returnValue([r])
-                else:
-                    # Drop
-                    logger.debug("Dropping {}.".format(r))
-                    continue
-
+#                logger.debug('_process_request result: {}'.format(x))
             elif isinstance(r, (BaseItem, dict)):
-#                logger.debug("Is Item: {}".format(r))
                 x = yield self._process_item(r, response, spider)
-#                logger.debug("Have return value ({}) for {}".format(x, r['url']))
-                returnValue([r])
-#                yield r
+            else:
+                raise Exception("Object not Request or Item")
 
+            if x is not None:
+                returnValue(True)
+            else:
+                # Drop
+                returnValue(False)
+
+        def _wrap_filter(r):
+            logger.debug("wrap_filter in: {}".format(r))
+            ret = _filter(r)
+            logger.debug("wrap_filter out: {}".format(ret))
+            return ret
+
+        return (r for r in result or () if _wrap_filter(r))
+
+#        for r in result:
+#            if isinstance(r, Request):
+##                logger.debug("Is Request: {}".format(r))
+#                x = yield self._process_request(r, spider)
+##                logger.debug("Have return value ({}) for {}".format(x, r))
+#                if x:
+##                    yield r
+#                    returnValue([r])
+#                else:
+#                    # Drop
+#                    logger.debug("Dropping {}.".format(r))
+#                    continue
+#
+#            elif isinstance(r, (BaseItem, dict)):
+##                logger.debug("Is Item: {}".format(r))
+#                x = yield self._process_item(r, response, spider)
+##                logger.debug("Have return value ({}) for {}".format(x, r['url']))
+#                returnValue([r])
+##                yield r
+#
     def _get_key(self, request):
         key = (request.meta.get('refetchcontrol_key') or
                request.meta.get('deltafetch_key') or

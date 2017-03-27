@@ -1,5 +1,6 @@
 setup.py
 RISJbot/__init__.py
+RISJbot/aws_credentials.py
 RISJbot/contracts.py
 RISJbot/items.py
 RISJbot/loaders.py
@@ -8,7 +9,7 @@ RISJbot/pipelines.py
 RISJbot/settings.py
 RISJbot/utils.py
 RISJbot/middlewares/__init__.py
-RISJbot/middlewares/risjdeltafetch.py
+RISJbot/middlewares/refetchcontrol.py
 RISJbot/middlewares/risjextractjsonld.py
 RISJbot/middlewares/risjfake404.py
 RISJbot/middlewares/risjstripnull.py

@@ -30,10 +30,11 @@ ROBOTSTXT_OBEY = True
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
-# .aws_credentials.py should set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+# aws_credentials.py should set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 # in a similar manner to this file.
-for line in open('.aws_credentials.py', 'r'):
-    exec(line)
+from .aws_credentials import *
+#for line in open('.aws_credentials.py', 'r'):
+#    exec(line)
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
 FEED_URI = 's3://reutersinstitute-risjbot/test/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
@@ -134,8 +135,18 @@ CLOSESPIDER_TIMEOUT = 570
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
+#    'scrapy_dotpersistence.DotScrapyPersistence': 0,
+    # Only designed to work on ScrapingHub - fiddle for local testing
+#    'RISJbot.utils._risj_dotscrapy_indirect': 0,
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
+
+# Persist the .scrapy directory via AWS
+#DOTSCRAPY_ENABLED = True
+#ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+#ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+#ADDONS_AWS_USERNAME = "username"
+#ADDONS_S3_BUCKET = 'reutersinstitute-risjbot'
 
 # TODO: Add an ML metadata-generating pipeline
 # Configure item pipelines

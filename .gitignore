@@ -1,4 +1,4 @@
 .scrapy
-.aws_credentials.py
+RISJbot/aws_credentials.py
 build/*
 **/*.pyc

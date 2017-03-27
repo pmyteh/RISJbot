@@ -38,12 +38,24 @@ class RISJExtractJSONLD(object):
             for blob in response.xpath('//script[@type="application/ld+json"]/text()').extract():
                 if 'json-ld' not in response.meta:
                     response.meta['json-ld'] = []
-                content = json.loads(blob)
-                logger.debug('JSON-LD found: '+pformat(content))
-                response.meta['json-ld'].append(content)
+                try:
+                    content = json.loads(blob)
+#                    logger.debug('JSON-LD found: '+pformat(content))
+                    response.meta['json-ld'].append(content)
+                    if self.stats:
+                        self.stats.inc_value('risjextractjsonld/extracted',
+                                              spider=spider)
+                except json.decoder.JSONDecodeError:
+                    logger.debug('JSON-LD extraction failed: '+pformat(content))
+                    if self.stats:
+                        self.stats.inc_value('risjextractjsonld/failed',
+                                              spider=spider)
+                    
         except AttributeError:
             # No xpath: Not XML/HTML doc (perhaps a gzipped Sitemap)
-            pass
+            if self.stats:
+                self.stats.inc_value('risjextractjsonld/notsuitable',
+                                     spider=spider)
         return None # Success
 
 
