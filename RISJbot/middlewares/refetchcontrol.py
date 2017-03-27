@@ -13,8 +13,8 @@ import pickle
 import datetime
 import sqlite3
 
-from twisted.enterprise import adbapi
-from twisted.internet.defer import inlineCallbacks, returnValue
+#from twisted.enterprise import adbapi
+#from twisted.internet.defer import inlineCallbacks, returnValue
 from scrapy.http import Request
 from scrapy.item import BaseItem
 from scrapy.utils.request import request_fingerprint
@@ -40,8 +40,9 @@ class RefetchControl(object):
      * A mechanism for ensuring complete fetches, by trawling RefetchControl's
        database for insufficiently-fetched pages and scheduling them.
 
-    It also depends on twisted.enterprise.adbapi and sqlite3 rather than
-    bsddb3.
+    This depends on sqlite3 instead of bsddb3. It should really use
+    twisted.enterprise.adbapi, but the process_spider_output() interface only
+    takes concrete values rather than Deferred()s, so it's not very useful.
     """
 
     def __init__(self, crawler):
@@ -54,8 +55,9 @@ class RefetchControl(object):
         self.reset = s.getbool('REFETCHCONTROL_RESET', False)
         # Grotty: see _schedule_url()
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
-        self.dbpools = {}
-        self.trawlstatus = "Not started"
+        self.dbs = {}
+#        self.dbpools = {}
+#        self.trawlstatus = "Not started"
         self.stats = crawler.stats
         logger.debug("RefetchControl starting. dir: {}, "
                      "maxfetches: {}, refetchsecs: {}, reset: {}, stats: {}"
@@ -91,38 +93,44 @@ class RefetchControl(object):
             new = True
 
         detect_types = sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES
-        self.dbpools[spider.name] = adbapi.ConnectionPool(
-                                        "sqlite3",
-                                        dbpath,
-                                        detect_types=detect_types,
-                                        check_same_thread=False
-                                    )
+        self.dbs[spider.name] = sqlite3.connect(dbpath,
+                                                detect_types=detect_types)
+#        self.dbpools[spider.name] = adbapi.ConnectionPool(
+#                                        "sqlite3",
+#                                        dbpath,
+#                                        detect_types=detect_types,
+#                                        check_same_thread=False
+#                                    )
 
 
         if new or self.reset or getattr(spider, 'refetchcontrol_reset', False):
             # return Deferred to reset the database.
-            return self.dbpools[spider.name].runInteraction(self._resetdb)
+#            return self.dbpools[spider.name].runInteraction(self._resetdb)
+            self._resetdb(self.dbs[spider.name].cursor())
 
         
     def spider_closed(self, spider):
-        for db in self.dbpools.values():
+#        for db in self.dbpools.values():
+        for db in self.dbs.values():
             db.close()
 
     def spider_idle(self, spider):
         logger.debug("spider_idle signal caught for {}.".format(spider.name))
 
-        if self.refetchfromdb and self.trawlstatus == "Not started":
+        if self.refetchfromdb:# and self.trawlstatus == "Not started":
             logger.debug("Trawling database for unfetched pages.")
-            self.trawlstatus = "In progress"
-            d = self.dbpools[spider.name].runWithConnection(self._trawldb,
-                                                            spider)
-            d.addCallback(lambda _: setattr(self, 'trawlstatus', 'Done'))
-
-        if self.trawlstatus == "In progress":
-            # Trawl pending. Raising DontCloseSpider guarantees will be
-            # called again.
-            logger.debug("Raising DontCloseSpider")
-            raise DontCloseSpider
+#            self.trawlstatus = "In progress"
+#            d = self.dbpools[spider.name].runWithConnection(self._trawldb,
+#                                                            spider)
+#            d.addCallback(lambda _: setattr(self, 'trawlstatus', 'Done'))
+            self._trawldb(self.dbs[spider.name].cursor(), spider)
+#        
+#
+#        if self.trawlstatus == "In progress":
+#            # Trawl pending. Raising DontCloseSpider guarantees will be
+#            # called again.
+#            logger.debug("Raising DontCloseSpider")
+#            raise DontCloseSpider
 
     @staticmethod
     def _resetdb(c):
@@ -164,6 +172,7 @@ class RefetchControl(object):
                         )
             self._schedule_url(url, spider)
         logger.debug("_trawldb finished.")
+        self.trawlstatus = "Done"
 
     def _schedule_url(self, url, spider):
         # This is slightly problematic (but unavaoidable).
@@ -183,26 +192,29 @@ class RefetchControl(object):
         self.crawler.engine.crawl(Request(url, callback=eval(self.rqcallback)),
                                   spider)
 
-    @inlineCallbacks
+#    @inlineCallbacks
     def _process_request(self, r, spider):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
-        l = yield self.dbpools[spider.name].runQuery(
+#        l = yield self.dbpools[spider.name].runQuery(
+        c = self.dbs[spider.name].cursor().execute(    
                 'SELECT url, fetches, time FROM records WHERE key=?', (key,))
 
-        if len(l) == 0:
+        l = c.fetchone()
+        if l is None:
             # First fetch. Log and return.
             logger.debug("First fetch: {}".format(r))
             if self.stats:
                 self.stats.inc_value('refetchcontrol/firstfetch',
                                      spider=spider)
-            returnValue(r)
+            return r
+#            returnValue(r)
 
         # Fetched at least once.
         # Are we allowed another fetch? If so, have we waited the
         # minimum allowable period?
-        url, nf, t = l[0]
+        url, nf, t = l
         tdiff = datetime.datetime.utcnow() - t
         if (nf >= self.maxfetches or
                tdiff.total_seconds() < self.refetchsecs):
@@ -221,7 +233,8 @@ class RefetchControl(object):
             if self.stats:
                 self.stats.inc_value('refetchcontrol/skipped',
                                      spider=spider)
-            returnValue(None)
+            return None
+#            returnValue(None)
         # Yes. Log, add to stats, return
         logger.debug("Refetching ({} fetches, "
                      "last at {}, {:.0f} seconds ago, "
@@ -235,58 +248,68 @@ class RefetchControl(object):
                     )
         if self.stats:
             self.stats.inc_value('refetchcontrol/refetched', spider=spider)
-        returnValue(r)
+        return r
+#        returnValue(r)
         
 
-    @inlineCallbacks
+#    @inlineCallbacks
     def _process_item(self, item, response, spider):
         # Is Item; update the database with the new number of fetches
         # and timestamp, then pass the Item on.
-        key = self._get_key(response.request)
+
+        c = self.dbs[spider.name].cursor()
+
         query = 'SELECT fetches FROM records WHERE key=?'
-        l = yield self.dbpools[spider.name].runQuery(query, (key,))
-        try:
-            nf = l.pop()[0] + 1
-        except IndexError:
+        key = self._get_key(response.request)
+#        l = yield self.dbpools[spider.name].runQuery(query, (key,))
+        c.execute(query, (key,))
+        l = c.fetchone()
+        if l is None:
             nf = 1
+        else:
+            nf = l[0] + 1
 
         url = response.url
         t = datetime.datetime.utcnow()
         query = ("INSERT OR REPLACE INTO records(key, url, fetches, time) "
                  "VALUES(?, ?, ?, ?)")
-        yield self.dbpools[spider.name].runOperation(query, (key, url, nf, t))
+#        yield self.dbpools[spider.name].runOperation(query, (key, url, nf, t))
+        c.execute(query, (key, url, nf, t))
 
         # TODO: Consider adding extra middleware to drop if it hasn't
         #       changed since the last fetch?
         if self.stats:
             self.stats.inc_value('refetchcontrol/stored', spider=spider)
-        returnValue(item)
+        return item
+#        returnValue(item)
  
     def process_spider_output(self, response, result, spider):
 
-        @inlineCallbacks
+#        @inlineCallbacks
         def _filter(r):
             if isinstance(r, Request):
-                x = yield self._process_request(r, spider)
+                return self._process_request(r, spider)
+#                x = yield self._process_request(r, spider)
 #                logger.debug('_process_request result: {}'.format(x))
             elif isinstance(r, (BaseItem, dict)):
-                x = yield self._process_item(r, response, spider)
+#                x = yield self._process_item(r, response, spider)
+                return self._process_item(r, response, spider)
             else:
                 raise Exception("Object not Request or Item")
+#
+#            if x is not None:
+#                returnValue(True)
+#            else:
+#                # Drop
+#                returnValue(False)
 
-            if x is not None:
-                returnValue(True)
-            else:
-                # Drop
-                returnValue(False)
+#        def _wrap_filter(r):
+#            logger.debug("wrap_filter in: {}".format(r))
+#            ret = _filter(r)
+#            logger.debug("wrap_filter out: {}".format(ret))
+#            return ret
 
-        def _wrap_filter(r):
-            logger.debug("wrap_filter in: {}".format(r))
-            ret = _filter(r)
-            logger.debug("wrap_filter out: {}".format(ret))
-            return ret
-
-        return (r for r in result or () if _wrap_filter(r))
+        return (r for r in result or () if _filter(r))
 
 #        for r in result:
 #            if isinstance(r, Request):
