@@ -129,7 +129,10 @@ DOTSCRAPY_ENABLED = True
 # without overlap.
 # TODO: Adjust to suit actual long-run crawl times
 # TODO: May be better set in Scrapinghub, along with the re-launch timer
-CLOSESPIDER_TIMEOUT = 510
+# Deleted: takes too long to stop to be really useful; just rely on
+# scrapinghub refusing to queue the same crawl if it's already queued or
+# running (TN: 2017-03-27)
+#CLOSESPIDER_TIMEOUT = 510
 
 
 # Enable or disable extensions
