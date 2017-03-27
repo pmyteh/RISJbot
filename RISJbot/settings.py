@@ -66,13 +66,19 @@ FEED_EXPORT_ENCODING = 'utf-8'
 
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+# Note especially that high numbers are "close to the spider" (first to handle
+# Requests, last to handle Responses) and low numbers are "close to the engine"
+# (vice-versa)
 SPIDER_MIDDLEWARES = {
-    'RISJbot.middlewares.refetchcontrol.RefetchControl': 200,
-    # Note: Should be after RefetchControl, to ensure that fetch gets logged:
+    # Note: Should be before RefetchControl, to ensure that fetch gets logged:
     'RISJbot.middlewares.risjfake404.RISJFake404': 222,
     # Note: Should be before any middleware which discards <scripts>:
     'RISJbot.middlewares.risjextractjsonld.RISJExtractJSONLD': 300,
-    'RISJbot.middlewares.risjunwantedcontent.RISJUnwantedContent': 900,
+    'RISJbot.middlewares.refetchcontrol.RefetchControl': 800,
+    # Note: Should be after RefetchControl, to ensure that the URLs stored
+    #       are the altered "canonical" ones.
+    'RISJbot.middlewares.equivalentdomains.EquivalentDomains': 900,
+    'RISJbot.middlewares.risjunwantedcontent.RISJUnwantedContent': 950,
 }
 
 # Enable RefetchControl, 8 fetches total, every 3 hours, including a
@@ -116,8 +122,13 @@ DOWNLOADER_MIDDLEWARES = {
 RISJSTRIPNULL_ENABLED = True
 RISJSTRIPNULL_SPIDERS = ['ap']
 
+# Map all 'edition.cnn.com' URLs to the equivalent 'www.cnn.com' (dedupe)
+# TN, 2017/03/27
+EQUIVALENTDOMAINS_ENABLED = True
+EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
+
 # Enable persistent storage in .scrapy (TN, 2017-02-09)
-DOTSCRAPY_ENABLED = True
+#DOTSCRAPY_ENABLED = True
 
 # Disable the dupe filter: BaseDupeFilter is a no-op. If a filter is
 # applied on top of RefetchControl, they both limit
