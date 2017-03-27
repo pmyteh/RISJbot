@@ -8,7 +8,7 @@
 import logging
 import json
 from pprint import pformat
-from scrapy.exceptions import NotConfigured
+from scrapy.exceptions import NotConfigured, NotSupported
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ class RISJExtractJSONLD(object):
                         self.stats.inc_value('risjextractjsonld/failed',
                                               spider=spider)
                     
-        except AttributeError:
+        except AttributeError, NotSupported:
             # No xpath: Not XML/HTML doc (perhaps a gzipped Sitemap)
             if self.stats:
                 self.stats.inc_value('risjextractjsonld/notsuitable',
