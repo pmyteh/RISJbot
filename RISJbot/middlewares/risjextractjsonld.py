@@ -52,7 +52,7 @@ class RISJExtractJSONLD(object):
                         self.stats.inc_value('risjextractjsonld/failed',
                                               spider=spider)
                     
-        except AttributeError, NotSupported:
+        except (AttributeError, NotSupported):
             # No xpath: Not XML/HTML doc (perhaps a gzipped Sitemap)
             if self.stats:
                 self.stats.inc_value('risjextractjsonld/notsuitable',
