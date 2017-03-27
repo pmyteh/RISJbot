@@ -68,6 +68,9 @@ FEED_EXPORT_ENCODING = 'utf-8'
 # Requests, last to handle Responses) and low numbers are "close to the engine"
 # (vice-versa)
 SPIDER_MIDDLEWARES = {
+    # NOTE: Subclassed as downloader middleware in a gross hack by
+    #       OffsiteDownloaderShim. Don't load twice.
+    'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': None,
     # Note: Should be before RefetchControl, to ensure that fetch gets logged:
     'RISJbot.middlewares.risjfake404.RISJFake404': 222,
     # Note: Should be before any middleware which discards <scripts>:
@@ -112,6 +115,7 @@ RISJEXTRACTJSONLD_ENABLED = True
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
+    'RISJbot.middlewares.offsitedownloadershim.OffsiteDownloaderShim': 100,
     'RISJbot.middlewares.risjstripnull.RISJStripNull': 543,
 }
 
@@ -169,7 +173,7 @@ ITEM_PIPELINES = {
 
 # Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
 # TN 2017/03/27
-STRIPRAWPAGE_ENABLED = True
+STRIPRAWPAGE_ENABLED = False
 
 
 # A contract promising *not* to collect data for a particular field
