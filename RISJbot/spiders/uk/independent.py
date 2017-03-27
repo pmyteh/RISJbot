@@ -8,7 +8,9 @@ from scrapy.loader.processors import Join, Compose, MapCompose
 
 class IndependentSpider(NewsSitemapSpider):
     name = 'independent'
-    # allowed_domains = ['independent.co.uk']
+    # Don't accept off-domain redirects to thinly-branded content from other
+    # providers (Evening Standard, TheStreet.com etc.)
+    allowed_domains = ['independent.co.uk']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
     sitemap_urls = ['http://www.independent.co.uk/googlenewssitemap'] 
 

@@ -5,7 +5,6 @@ RISJbot/contracts.py
 RISJbot/items.py
 RISJbot/loaders.py
 RISJbot/metadata.py
-RISJbot/pipelines.py
 RISJbot/settings.py
 RISJbot/utils.py
 RISJbot/middlewares/__init__.py
@@ -15,6 +14,8 @@ RISJbot/middlewares/risjextractjsonld.py
 RISJbot/middlewares/risjfake404.py
 RISJbot/middlewares/risjstripnull.py
 RISJbot/middlewares/risjunwantedcontent.py
+RISJbot/pipelines/__init__.py
+RISJbot/pipelines/striprawpage.py
 RISJbot/spiders/__init__.py
 RISJbot/spiders/basespiders.py
 RISJbot/spiders/uk/__init__.py

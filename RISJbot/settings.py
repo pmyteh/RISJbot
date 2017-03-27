@@ -42,10 +42,6 @@ FEED_STORE_EMPTY = True
 FEED_EXPORT_ENCODING = 'utf-8'
 # FEED_EXPORT_ENCODING = None # UTF-8 except for JSON, which is ASCII-escaped
 
-# Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
-# TN 2017/03/27
-STRIPRAWPAGE_ENABLED = True
-
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
@@ -170,6 +166,11 @@ EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 ITEM_PIPELINES = {
     'RISJbot.pipelines.striprawpage.StripRawPage': 300,
 }
+
+# Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
+# TN 2017/03/27
+STRIPRAWPAGE_ENABLED = True
+
 
 # A contract promising *not* to collect data for a particular field
 # TN: 2017-02-27
