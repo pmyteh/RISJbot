@@ -176,7 +176,7 @@ class RefetchControl(object):
         l = c.fetchone()
         if l is None:
             # First fetch. Log and return.
-#            logger.debug("First fetch: {}".format(r))
+            logger.debug("First fetch: {}".format(r))
             if self.stats:
                 self.stats.inc_value('refetchcontrol/firstfetch',
                                      spider=spider)
@@ -207,15 +207,15 @@ class RefetchControl(object):
                                      spider=spider)
             return None
         # Yes. Log, add to stats, return
-#        logger.debug("Refetching ({} fetches, "
-#                     "last at {}, {:.0f} seconds ago, "
-#                     "min secs {}) {}".format(
-#                             nf,
-#                             t.isoformat(),
-#                             tdiff.total_seconds(),
-#                             self.refetchsecs,
-#                             r,
-#                         )
+        logger.debug("Refetching ({} fetches, "
+                     "last at {}, {:.0f} seconds ago, "
+                     "min secs {}) {}".format(
+                             nf,
+                             t.isoformat(),
+                             tdiff.total_seconds(),
+                             self.refetchsecs,
+                             r,
+                         )
                     )
         if self.stats:
             self.stats.inc_value('refetchcontrol/refetched', spider=spider)

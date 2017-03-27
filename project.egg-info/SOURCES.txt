@@ -9,6 +9,7 @@ RISJbot/settings.py
 RISJbot/utils.py
 RISJbot/middlewares/__init__.py
 RISJbot/middlewares/equivalentdomains.py
+RISJbot/middlewares/offsitedownloadershim.py
 RISJbot/middlewares/refetchcontrol.py
 RISJbot/middlewares/risjextractjsonld.py
 RISJbot/middlewares/risjfake404.py
