@@ -288,7 +288,7 @@ class NewsLoader(ItemLoader):
                        'head/meta[@name="dc.description" or '
                             '@name="DC.description"]/@content')
         self.add_xpath('modtime',
-                       'head/meta[@name="dcterms.modified" or 
+                       'head/meta[@name="dcterms.modified" or '
                             '@name="DCTERMS.modified"]/@content')
         self.add_xpath('firstpubtime',
                        'head/meta[@name="dcterms.created" or '
