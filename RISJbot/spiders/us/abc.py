@@ -5,6 +5,7 @@ from RISJbot.loaders import NewsLoader
 from RISJbot.utils import mutate_selector_del_xpath
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
+import re
 
 class AbcSpider(NewsSitemapSpider):
     name = 'abc'
@@ -37,6 +38,10 @@ class AbcSpider(NewsSitemapSpider):
 
         l.add_xpath('section', '//article/@data-section')
         l.add_xpath('modtime', 'head/meta[@name="Last-Modified"]/@content')
-        l.add_xpath('firstpubtime', '//div[contains(@class, "article-meta")]//span[contains(@class, "timestamp")]/text()')
+        l.add_xpath('firstpubtime', '//div[contains(@class, "article-meta")]//span[contains(@class, "timestamp")]/text()', self._strip_timestamp)
 
         return l.load_item()
+
+    @staticmethod
+    def _strip_timestamp(ts):
+        return re.sub(r'.* — ', '', ts, count=1)
