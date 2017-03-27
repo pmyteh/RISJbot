@@ -49,7 +49,8 @@ def wrapped_parse(s):
 
     # Dateparser doesn't like millisecond precision in its strings.
     # 2017-02-27T18:02:16.787Z -> 2017-02-27T18:02:16Z
-    s = re.sub(r'^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})\.[0-9]+', r'\1', s)
+    s = re.sub(r'^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})'
+                    '\.[0-9]+', r'\1', s)
 
     try:
         ns = dateparser.parse(s, settings=dateparsersettings)
@@ -134,25 +135,33 @@ class NewsLoader(ItemLoader):
         self.add_value('fetchtime',
                        str(response.headers['Date'], encoding='utf-8'))
         # TODO: Consider (and check vs actual responses:)
-        # self.add_value('modtime', str(response.headers['Last-Modified'], encoding='utf-8'))
+        # self.add_value('modtime',
+        #                str(response.headers['Last-Modified'],
+        #                    encoding='utf-8'))
 
     def add_htmlmeta(self):
         """Extracts the content potentially encoded in standard HTML meta tags,
            such as <meta name=author ...> and <meta name=keywords ...>.
            Extensions, such as the schema.org and Open Graph codings, are in
            their own methods."""
-        self.add_xpath('bylines', 'head/meta[@name="author" or @property="author"]/@content')
-        # self.add_xpath('bylines', '//a[@rel=author]/text()') # TODO: Check if needed
+        self.add_xpath('bylines',
+                       'head/meta[@name="author" or '
+                            '@property="author"]/@content')
+        # self.add_xpath('bylines', '//a[@rel=author]/text()') # If needed
         # This is Google News specific
         self.add_xpath('keywords', 'head/meta[@name="news_keywords"]/@content')
         self.add_xpath('keywords', 'head/meta[@name="keywords"]/@content')
 
     def add_schemaorg(self, response, jsonld=True, microdata=True, rdfa=True):
         """Indirect to the add_schemaorg methods"""
-        self.add_schemaorg_mde(response, jsonld=True, microdata=False, rdfa=False)
+        self.add_schemaorg_mde(response,
+                               jsonld=True,
+                               microdata=False,
+                               rdfa=False)
         self.add_schemaorg_by_xpath()
 
-    def add_schemaorg_mde(self, response, jsonld=True, microdata=True, rdfa=True):
+    def add_schemaorg_mde(self, response, jsonld=True, microdata=True,
+                            rdfa=True):
         mde = RISJMetadataExtractor(response,
                                     jsonld=jsonld,
                                     microdata=microdata,
@@ -170,7 +179,8 @@ class NewsLoader(ItemLoader):
         except (ValueError, KeyError):
             self.add_value('bylines',  data.get('author'))
         except Exception as e:
-            logger.error("Failed to handle byline extraction from {} for {}".format(data, response))
+            logger.warning("Failed to handle byline extraction from {} for "
+                                "{}: {}".format(data, response, e))
         try:
             self.add_value('source',   data['publisher']['name'])
         except (ValueError, KeyError):
@@ -193,21 +203,42 @@ class NewsLoader(ItemLoader):
         # These xpaths are fairly naive; in particular, they don't rely on
         # the presence of an appropriate 'itemscope' for microdata.
 
+        # == CreativeWork ==
         # TODO: These dateXxxx are allowed to be dates, not times. Should
         #       probably check somewhere if they're not full times and push
         #       them to the bottom of the queue for those sites where
         #       that's true.
-        self.add_xpath('firstpubtime', '//*[@itemprop="datePublished" or @property="datePublished"]/@content') # CreativeWork
-        # self.add_xpath('firstpubtime', '//[@itemprop="dateCreated"]/@content]') # CreativeWork TODO: Check if needed - less apposite than datePublished
-        self.add_xpath('modtime', '//*[@itemprop="dateModified" or @property="dateModified"]/@content') # CreativeWork
-        self.add_xpath('keywords', '//*[@itemprop="keywords" or @property="keywords"]/@content') # CreativeWork 
-        self.add_xpath('headline', '//*[@itemprop="headline" or @property="headline"]//text()') # CreativeWork 
-        self.add_xpath('bodytext', '//*[@itemprop="articleBody" or @property="articleBody" or @itemprop="reviewBody" or @property="reviewBody"]//text()') # Article / Review
-        self.add_xpath('section', '//*[@itemprop="articleSection" or @property="articleSection"]/@content') # Article
+        self.add_xpath('firstpubtime',
+                       '//*[@itemprop="datePublished" or '
+                            '@property="datePublished"]/@content')
+        # self.add_xpath('firstpubtime',
+        #                '//[@itemprop="dateCreated"]/@content]')
+        # TODO: Check if needed - less apposite than datePublished
+        self.add_xpath('modtime',
+                       '//*[@itemprop="dateModified" or '
+                            '@property="dateModified"]/@content')
+        self.add_xpath('keywords',
+                       '//*[@itemprop="keywords" or '
+                            '@property="keywords"]/@content')
+        self.add_xpath('headline',
+                       '//*[@itemprop="headline" or '
+                                   '@property="headline"]//text()')
+        # == Article ==
+        self.add_xpath('section',
+                       '//*[@itemprop="articleSection" or '
+                            '@property="articleSection"]/@content')
+        # == Article and Review ==
+        self.add_xpath('bodytext',
+                       '//*[@itemprop="articleBody" or '
+                            '@property="articleBody" or '
+                            '@itemprop="reviewBody" or '
+                            '@property="reviewBody"]//text()')
 
     def add_schemaorg_bylines(self):
         # This has a high false-positive rate, so is separated out.
-        self.add_xpath('bylines', '//*[@itemprop="author"]//*[@itemprop="name"]//text()') # CreativeWork
+        # == CreativeWork ==
+        self.add_xpath('bylines',
+                       '//*[@itemprop="author"]//*[@itemprop="name"]//text()')
 
 
     def add_opengraph(self):
@@ -216,9 +247,12 @@ class NewsLoader(ItemLoader):
            graph. The schema is at http://ogp.me. Dates are ISO 8601 strings.
         """
         # TODO: Can these be exposed as microdata instead of RDFa?
-        self.add_xpath('source', 'head/meta[@property="og:site_name"]/@content')
-        self.add_xpath('headline', 'head/meta[@property="og:title"]/@content')
-        self.add_xpath('summary', 'head/meta[@property="og:description"]/@content')
+        self.add_xpath('source',
+                       'head/meta[@property="og:site_name"]/@content')
+        self.add_xpath('headline',
+                       'head/meta[@property="og:title"]/@content')
+        self.add_xpath('summary',
+                       'head/meta[@property="og:description"]/@content')
         # There are also: og:type (normally 'article'), og:image
         # (representative image) og:url (canonical URL), og:audio (audio
         # representation), og:determiner (title preceeded by 'a'/'an'/...),
@@ -226,12 +260,17 @@ class NewsLoader(ItemLoader):
         # and og:video (complementary video URL)
 
         # These are OG tags for the 'article' subclass 
-        self.add_xpath('modtime', 'head/meta[@property="article:modified_time"]/@content')
-        self.add_xpath('firstpubtime', 'head/meta[@property="article:published_time"]/@content')
-        self.add_xpath('section', 'head/meta[@property="article:section"]/@content')
-        self.add_xpath('bylines', 'head/meta[@property="article:author"]/@content')
+        self.add_xpath('modtime',
+                       'head/meta[@property="article:modified_time"]/@content')
+        self.add_xpath('firstpubtime',
+                       'head/meta[@property="article:published_time"]'
+                            '/@content')
+        self.add_xpath('section',
+                       'head/meta[@property="article:section"]/@content')
+        self.add_xpath('bylines',
+                       'head/meta[@property="article:author"]/@content')
         # Also:
-        # article:expiration_time - datetime - When the article is out of date after.
+        # article:expiration_time - When the article is out of date after.
         # article:tag - string array - Tag words associated with this article.
 
     def add_dublincore(self):
@@ -239,14 +278,31 @@ class NewsLoader(ItemLoader):
         # TODO: arrange to extract properly? Will be better if the namespace
         #       is properly referenced in all the headers, but worse otherwise.
         #       May not be a good idea.
-        self.add_xpath('headline', 'head/meta[@name="dc.title" or @name="DC.title"]/@content')
-        self.add_xpath('summary', 'head/meta[@name="dcterms.abstract" or @name="DCTERMS.abstract"]/@content')
-        self.add_xpath('summary', 'head/meta[@name="dc.description" or @name="DC.description"]/@content')
-        self.add_xpath('modtime', 'head/meta[@name="dcterms.modified" or @name="DCTERMS.modified"]/@content')
-        self.add_xpath('firstpubtime', 'head/meta[@name="dcterms.created" or @name="DCTERMS.created"]/@content')
-        self.add_xpath('source', 'head/meta[@name="dc.publisher" or @name="DC.publisher"]/@content')
-        #self.add_xpath('bylines', 'head/meta[@name="dc.creator" or @name="DC.creator"]/@content') # XXX? Valid for some docs, probably not for all.
-        #self.add_xpath('language', 'head/meta[@name="dc.language" or @name="DC.language"]/@content')
+        self.add_xpath('headline',
+                       'head/meta[@name="dc.title" or '
+                            '@name="DC.title"]/@content')
+        self.add_xpath('summary',
+                       'head/meta[@name="dcterms.abstract" or '
+                            '@name="DCTERMS.abstract"]/@content')
+        self.add_xpath('summary',
+                       'head/meta[@name="dc.description" or '
+                            '@name="DC.description"]/@content')
+        self.add_xpath('modtime',
+                       'head/meta[@name="dcterms.modified" or 
+                            '@name="DCTERMS.modified"]/@content')
+        self.add_xpath('firstpubtime',
+                       'head/meta[@name="dcterms.created" or '
+                            '@name="DCTERMS.created"]/@content')
+        self.add_xpath('source',
+                       'head/meta[@name="dc.publisher" or '
+                            '@name="DC.publisher"]/@content')
+        # Correct assumption creator==bylines for some docs, not for all.
+        #self.add_xpath('bylines',
+        #               'head/meta[@name="dc.creator" or '
+        #                   '@name="DC.creator"]/@content') 
+        #self.add_xpath('language',
+        #               'head/meta[@name="dc.language" or '
+        #                   '@name="DC.language"]/@content')
         
 
 
