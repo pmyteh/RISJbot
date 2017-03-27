@@ -56,8 +56,6 @@ class RefetchControl(object):
         # Grotty: see _schedule_url()
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
         self.dbs = {}
-#        self.dbpools = {}
-#        self.trawlstatus = "Not started"
         self.stats = crawler.stats
         logger.debug("RefetchControl starting. dir: {}, "
                      "maxfetches: {}, refetchsecs: {}, reset: {}, stats: {}"
@@ -92,57 +90,29 @@ class RefetchControl(object):
             # Will need regenerating
             new = True
 
-        detect_types = sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES
+        detect_types = sqlite3.PARSE_DECLTYPES # |sqlite3.PARSE_COLNAMES
         self.dbs[spider.name] = sqlite3.connect(dbpath,
                                                 detect_types=detect_types)
-#        self.dbpools[spider.name] = adbapi.ConnectionPool(
-#                                        "sqlite3",
-#                                        dbpath,
-#                                        detect_types=detect_types,
-#                                        check_same_thread=False
-#                                    )
-
 
         if new or self.reset or getattr(spider, 'refetchcontrol_reset', False):
-            # return Deferred to reset the database.
-#            return self.dbpools[spider.name].runInteraction(self._resetdb)
-            self._resetdb(self.dbs[spider.name].cursor())
-
+            logger.debug("Resetting RefetchControl database.")
+            c = self.dbs[spider.name].cursor()
+            c.execute("DROP TABLE IF EXISTS records")
+            c.execute("DROP INDEX IF EXISTS idx_fetches_time")
+            c.execute("CREATE TABLE records (key bytes, url str, "
+                        "fetches int, time timestamp, PRIMARY KEY(key)) "
+                        "WITHOUT ROWID")
+            c.execute("CREATE INDEX idx_fetches_time ON records (fetches, time)")
+            self.dbs[spider.name].commit()
         
     def spider_closed(self, spider):
-#        for db in self.dbpools.values():
+        logger.debug("Closing databases")
         for db in self.dbs.values():
+            # Paranoia.
+            db.commit()
             db.close()
 
     def spider_idle(self, spider):
-        logger.debug("spider_idle signal caught for {}.".format(spider.name))
-
-        if self.refetchfromdb:# and self.trawlstatus == "Not started":
-            logger.debug("Trawling database for unfetched pages.")
-#            self.trawlstatus = "In progress"
-#            d = self.dbpools[spider.name].runWithConnection(self._trawldb,
-#                                                            spider)
-#            d.addCallback(lambda _: setattr(self, 'trawlstatus', 'Done'))
-            self._trawldb(self.dbs[spider.name].cursor(), spider)
-#        
-#
-#        if self.trawlstatus == "In progress":
-#            # Trawl pending. Raising DontCloseSpider guarantees will be
-#            # called again.
-#            logger.debug("Raising DontCloseSpider")
-#            raise DontCloseSpider
-
-    @staticmethod
-    def _resetdb(c):
-        logger.debug("Resetting RefetchControl database.")
-        c.execute("DROP TABLE IF EXISTS records")
-        c.execute("DROP INDEX IF EXISTS idx_fetches_time")
-        c.execute("CREATE TABLE records (key bytes, url str, "
-                    "fetches int, time timestamp, PRIMARY KEY(key)) "
-                    "WITHOUT ROWID")
-        c.execute("CREATE INDEX idx_fetches_time ON records (fetches, time)")
-
-    def _trawldb(self, c, spider):
         """If an item is fetched once, but then disappears from the feed
            (pushed off the RSS list by new items, for example) it is not
            automatically refetched. For data completeness, this is an issue.
@@ -150,9 +120,15 @@ class RefetchControl(object):
            Iterate the database's stored keys, check if any items are
            eligible. If so, queue Requests for them.
 
-           If this is called only from spider_idle, there should be no race
-           with the main process_spider_output throughput."""
-        
+           There should be no race with the main process_spider_output
+           throughput."""
+
+        if not self.refetchfromdb:
+            return
+
+        logger.debug("Trawling database for unfetched pages.")
+
+        c = self.dbs[spider.name].cursor()
         cutofft = (datetime.datetime.utcnow()
                         - datetime.timedelta(seconds=self.refetchsecs))
         for row in c.execute('SELECT * FROM records WHERE '
@@ -171,8 +147,7 @@ class RefetchControl(object):
                              )
                         )
             self._schedule_url(url, spider)
-        logger.debug("_trawldb finished.")
-        self.trawlstatus = "Done"
+        logger.debug("Trawl finished.")
 
     def _schedule_url(self, url, spider):
         # This is slightly problematic (but unavaoidable).
@@ -192,12 +167,10 @@ class RefetchControl(object):
         self.crawler.engine.crawl(Request(url, callback=eval(self.rqcallback)),
                                   spider)
 
-#    @inlineCallbacks
     def _process_request(self, r, spider):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
-#        l = yield self.dbpools[spider.name].runQuery(
         c = self.dbs[spider.name].cursor().execute(    
                 'SELECT url, fetches, time FROM records WHERE key=?', (key,))
 
@@ -209,7 +182,6 @@ class RefetchControl(object):
                 self.stats.inc_value('refetchcontrol/firstfetch',
                                      spider=spider)
             return r
-#            returnValue(r)
 
         # Fetched at least once.
         # Are we allowed another fetch? If so, have we waited the
@@ -234,7 +206,6 @@ class RefetchControl(object):
                 self.stats.inc_value('refetchcontrol/skipped',
                                      spider=spider)
             return None
-#            returnValue(None)
         # Yes. Log, add to stats, return
         logger.debug("Refetching ({} fetches, "
                      "last at {}, {:.0f} seconds ago, "
@@ -249,10 +220,8 @@ class RefetchControl(object):
         if self.stats:
             self.stats.inc_value('refetchcontrol/refetched', spider=spider)
         return r
-#        returnValue(r)
         
 
-#    @inlineCallbacks
     def _process_item(self, item, response, spider):
         # Is Item; update the database with the new number of fetches
         # and timestamp, then pass the Item on.
@@ -261,7 +230,6 @@ class RefetchControl(object):
 
         query = 'SELECT fetches FROM records WHERE key=?'
         key = self._get_key(response.request)
-#        l = yield self.dbpools[spider.name].runQuery(query, (key,))
         c.execute(query, (key,))
         l = c.fetchone()
         if l is None:
@@ -273,65 +241,29 @@ class RefetchControl(object):
         t = datetime.datetime.utcnow()
         query = ("INSERT OR REPLACE INTO records(key, url, fetches, time) "
                  "VALUES(?, ?, ?, ?)")
-#        yield self.dbpools[spider.name].runOperation(query, (key, url, nf, t))
         c.execute(query, (key, url, nf, t))
+        self.dbs[spider.name].commit()
 
         # TODO: Consider adding extra middleware to drop if it hasn't
         #       changed since the last fetch?
         if self.stats:
             self.stats.inc_value('refetchcontrol/stored', spider=spider)
         return item
-#        returnValue(item)
  
     def process_spider_output(self, response, result, spider):
 
-#        @inlineCallbacks
         def _filter(r):
             if isinstance(r, Request):
                 return self._process_request(r, spider)
-#                x = yield self._process_request(r, spider)
-#                logger.debug('_process_request result: {}'.format(x))
             elif isinstance(r, (BaseItem, dict)):
-#                x = yield self._process_item(r, response, spider)
                 return self._process_item(r, response, spider)
             else:
                 raise Exception("Object not Request or Item")
-#
-#            if x is not None:
-#                returnValue(True)
-#            else:
-#                # Drop
-#                returnValue(False)
-
-#        def _wrap_filter(r):
-#            logger.debug("wrap_filter in: {}".format(r))
-#            ret = _filter(r)
-#            logger.debug("wrap_filter out: {}".format(ret))
-#            return ret
 
         return (r for r in result or () if _filter(r))
 
-#        for r in result:
-#            if isinstance(r, Request):
-##                logger.debug("Is Request: {}".format(r))
-#                x = yield self._process_request(r, spider)
-##                logger.debug("Have return value ({}) for {}".format(x, r))
-#                if x:
-##                    yield r
-#                    returnValue([r])
-#                else:
-#                    # Drop
-#                    logger.debug("Dropping {}.".format(r))
-#                    continue
-#
-#            elif isinstance(r, (BaseItem, dict)):
-##                logger.debug("Is Item: {}".format(r))
-#                x = yield self._process_item(r, response, spider)
-##                logger.debug("Have return value ({}) for {}".format(x, r['url']))
-#                returnValue([r])
-##                yield r
-#
-    def _get_key(self, request):
+    @staticmethod
+    def _get_key(request):
         key = (request.meta.get('refetchcontrol_key') or
                request.meta.get('deltafetch_key') or
                request_fingerprint(request)
