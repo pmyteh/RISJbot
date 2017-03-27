@@ -33,8 +33,6 @@ ROBOTSTXT_OBEY = True
 # aws_credentials.py should set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 # in a similar manner to this file.
 from .aws_credentials import *
-#for line in open('.aws_credentials.py', 'r'):
-#    exec(line)
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
 FEED_URI = 's3://reutersinstitute-risjbot/test/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
@@ -43,6 +41,10 @@ FEED_FORMAT = 'jsonlines'
 FEED_STORE_EMPTY = True
 FEED_EXPORT_ENCODING = 'utf-8'
 # FEED_EXPORT_ENCODING = None # UTF-8 except for JSON, which is ASCII-escaped
+
+# Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
+# TN 2017/03/27
+STRIPRAWPAGE_ENABLED = True
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -165,9 +167,9 @@ EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 # TODO: Add an ML metadata-generating pipeline
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'RISJbot.pipelines.SpecificFixupsPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'RISJbot.pipelines.striprawpage.StripRawPage': 300,
+}
 
 # A contract promising *not* to collect data for a particular field
 # TN: 2017-02-27

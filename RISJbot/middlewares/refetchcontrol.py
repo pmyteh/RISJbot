@@ -57,13 +57,12 @@ class RefetchControl(object):
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
         self.dbs = {}
         self.stats = crawler.stats
-        logger.debug("RefetchControl starting. dir: {}, "
-                     "maxfetches: {}, refetchsecs: {}, reset: {}, stats: {}"
+        logger.debug("RefetchControl starting; dir: {}, "
+                     "maxfetches: {}, refetchsecs: {}, reset: {}"
                      "".format(self.dir,
                                self.maxfetches,
                                self.refetchsecs,
                                self.reset,
-                               self.stats,
                               )
                     )
 
