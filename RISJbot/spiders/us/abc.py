@@ -44,4 +44,7 @@ class AbcSpider(NewsSitemapSpider):
 
     @staticmethod
     def _strip_timestamp(ts):
-        return re.sub(r'.* — ', '', ts, count=1)
+        try:
+            return re.sub(r'.* — ', '', ts, count=1)
+        except TypeError:
+            return ts
