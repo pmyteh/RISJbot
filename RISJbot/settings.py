@@ -68,9 +68,9 @@ FEED_EXPORT_ENCODING = 'utf-8'
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
     'RISJbot.middlewares.refetchcontrol.RefetchControl': 200,
-    # Note: Should be after DeltaFetch, to ensure that fetch gets logged.
+    # Note: Should be after RefetchControl, to ensure that fetch gets logged:
     'RISJbot.middlewares.risjfake404.RISJFake404': 222,
-    # Note: Should be before any middleware which discards <scripts>
+    # Note: Should be before any middleware which discards <scripts>:
     'RISJbot.middlewares.risjextractjsonld.RISJExtractJSONLD': 300,
     'RISJbot.middlewares.risjunwantedcontent.RISJUnwantedContent': 900,
 }
@@ -125,11 +125,11 @@ DOTSCRAPY_ENABLED = True
 # (TN, 2017-02-14)
 #DUPEFILTER_CLASS = 'scrapy.dupefilters.BaseDupeFilter'
 
-# Close spider after 9.5 minutes, to allow for a 10 minute re-launch timer
+# Close spider after 8.5 minutes, to allow for a 10 minute re-launch timer
 # without overlap.
 # TODO: Adjust to suit actual long-run crawl times
 # TODO: May be better set in Scrapinghub, along with the re-launch timer
-CLOSESPIDER_TIMEOUT = 570
+CLOSESPIDER_TIMEOUT = 510
 
 
 # Enable or disable extensions
@@ -151,10 +151,9 @@ CLOSESPIDER_TIMEOUT = 570
 # TODO: Add an ML metadata-generating pipeline
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    # FIXME: Remove and fold fixups into parsing code
-    'RISJbot.pipelines.SpecificFixupsPipeline': 300,
-}
+#ITEM_PIPELINES = {
+#    'RISJbot.pipelines.SpecificFixupsPipeline': 300,
+#}
 
 # A contract promising *not* to collect data for a particular field
 # TN: 2017-02-27

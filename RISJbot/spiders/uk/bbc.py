@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from RISJbot.loaders import NewsLoader
+# Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
+from RISJbot.utils import mutate_selector_del_xpath
 from RISJbot.spiders.basespiders import NewsRSSFeedSpider
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
@@ -20,7 +22,13 @@ class BBCSpider(NewsRSSFeedSpider):
         @scrapes section source summary url
         @noscrapes modtime keywords
         """
-        l = NewsLoader(response=response)
+        s = response.selector
+        # Remove any content from the tree before passing it to the loader.
+        # There aren't native scrapy loader/selector methods for this.        
+        mutate_selector_del_xpath(s, '//*[@class="off-screen"]')
+
+        l = NewsLoader(selector=s)
+
 
         l.add_value('source', 'BBC News')
 
