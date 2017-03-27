@@ -46,7 +46,8 @@ class RISJExtractJSONLD(object):
                         self.stats.inc_value('risjextractjsonld/extracted',
                                               spider=spider)
                 except json.decoder.JSONDecodeError:
-                    logger.debug('JSON-LD extraction failed: '+pformat(blob))
+                    logger.info('JSON-LD extraction failed for {}: {}'.format(
+                                    response, blob)
                     if self.stats:
                         self.stats.inc_value('risjextractjsonld/failed',
                                               spider=spider)
