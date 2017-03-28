@@ -27,7 +27,7 @@ class ReutersSpider(NewsSitemapSpider):
     sitemap_follow = [gen_reuters_recent_regex(1)]
 
     def parse_page(self, response):
-        """@url <newsurl>
+        """@url http://uk.reuters.com/article/us-heart-nih-funding-idUKKBN16Y2EI
         @returns items 1
         @scrapes bodytext bylines fetchtime firstpubtime modtime headline
         @scrapes keywords section source summary url
