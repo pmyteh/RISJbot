@@ -25,26 +25,24 @@ class DailyMailSpider(NewsRSSFeedSpider):
         s = response.selector
         # Remove some content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.        
-#        self.logger.debug("before mutate_selector: %s" % str(s.xpath('//div[contains(@class, "related-carousel")]')))
         mutate_selector_del_xpath(s, '//script')
         mutate_selector_del_xpath(s, '//*[@style="display:none"]')
-        mutate_selector_del_xpath(s, '//div[contains(@class, "related-carousel")]')
-
-#        self.logger.debug("after mutate_selector: %s" % str(s.xpath('//div[contains(@class, "related-carousel")]')))
+        mutate_selector_del_xpath(s,
+                                  '//div[contains(@class, "related-carousel")]'
+                                 )
 
         l = NewsLoader(selector=s)
-
-#        self.logger.debug("loader selector: %s" % str(l.selector.xpath('//div[contains(@class, "related-carousel")]')))
-
 
         # Get alternative to RSS-source URL fluff
         l.add_xpath('url', 'head/link[@rel="canonical"]/@href')
 
+        drosss = (r' [fF]or (Dailymail.com|The Daily Mail|'
+                    'Daily Mail Australia|MailOnline)')
         # Sort out bylines with less fluff
         l.add_xpath('bylines',
                     'head/meta[@property="article:author"]/@content',
                     MapCompose(split_multiple_byline_string,
-                               lambda l: (re.sub(r' [fF]or (Dailymail.com|The Daily Mail|Daily Mail Australia|MailOnline)', r'', x) for x in l)
+                               lambda s: re.sub(drosss, r'', s)
                               )
                    )
 
