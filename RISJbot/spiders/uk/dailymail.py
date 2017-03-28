@@ -36,13 +36,13 @@ class DailyMailSpider(NewsRSSFeedSpider):
         # Get alternative to RSS-source URL fluff
         l.add_xpath('url', 'head/link[@rel="canonical"]/@href')
 
-        drosss = (r' [fF]or (Dailymail.com|The Daily Mail|'
+        drosss = (r' for (Dailymail.com|The Daily Mail|'
                     'Daily Mail Australia|MailOnline)')
         # Sort out bylines with less fluff
         l.add_xpath('bylines',
                     'head/meta[@property="article:author"]/@content',
                     MapCompose(split_multiple_byline_string,
-                               lambda s: re.sub(drosss, r'', s)
+                               lambda s: re.sub(drosss, r'', s, re.IGNORECASE)
                               )
                    )
 
