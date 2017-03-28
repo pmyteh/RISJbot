@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class Sentiment(object):
     def process_item(self, item, spider):
-        raise NotImplementedError
         try:
             blob = TextBlob(item['bodytext'])
             item['sentiment'] = blob.sentiment.polarity
