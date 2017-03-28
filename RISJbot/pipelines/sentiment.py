@@ -15,6 +15,7 @@ class Sentiment(object):
         try:
             blob = TextBlob(item['bodytext'])
             item['sentiment'] = blob.sentiment.polarity
+            item['subjectivity'] = blob.sentiment.subjectivity
         except KeyError:
             pass
         return item
