@@ -72,14 +72,14 @@ SPIDER_MIDDLEWARES = {
     #       OffsiteDownloaderShim. Don't load twice.
     'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': None,
     # Note: Should be before RefetchControl, to ensure that fetch gets logged:
-    'RISJbot.middlewares.risjfake404.RISJFake404': 222,
+    'RISJbot.spmiddlewares.risjfake404.RISJFake404': 222,
     # Note: Should be before any middleware which discards <scripts>:
-    'RISJbot.middlewares.risjextractjsonld.RISJExtractJSONLD': 300,
-    'RISJbot.middlewares.refetchcontrol.RefetchControl': 800,
+    'RISJbot.spmiddlewares.risjextractjsonld.RISJExtractJSONLD': 300,
+    'RISJbot.spmiddlewares.refetchcontrol.RefetchControl': 800,
     # Note: Should be after RefetchControl, to ensure that the URLs stored
     #       are the altered "canonical" ones.
-    'RISJbot.middlewares.equivalentdomains.EquivalentDomains': 900,
-    'RISJbot.middlewares.risjunwantedcontent.RISJUnwantedContent': 950,
+    'RISJbot.spmiddlewares.equivalentdomains.EquivalentDomains': 900,
+    'RISJbot.spmiddlewares.risjunwantedcontent.RISJUnwantedContent': 950,
 }
 
 # Enable RefetchControl, 8 fetches total, every 3 hours, including a
@@ -115,8 +115,8 @@ RISJEXTRACTJSONLD_ENABLED = True
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    'RISJbot.middlewares.offsitedownloadershim.OffsiteDownloaderShim': 100,
-    'RISJbot.middlewares.risjstripnull.RISJStripNull': 543,
+    'RISJbot.dlmiddlewares.offsitedownloadershim.OffsiteDownloaderShim': 100,
+    'RISJbot.dlmiddlewares.risjstripnull.RISJStripNull': 543,
 }
 
 # AP returns responses will ASCII NUL bytes embedded in them.
