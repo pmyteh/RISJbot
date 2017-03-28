@@ -169,6 +169,7 @@ EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'RISJbot.pipelines.sentiment.Sentiment': 100,
+    'RISJbot.pipelines.wordcount.WordCount': 200,
     'RISJbot.pipelines.striprawpage.StripRawPage': 900,
 }
 
