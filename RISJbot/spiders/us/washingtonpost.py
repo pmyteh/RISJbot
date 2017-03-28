@@ -14,7 +14,7 @@ class WashingtonPostSpider(NewsSitemapSpider):
     sitemap_urls = ['https://www.washingtonpost.com/news-sitemap-index.xml']
 
     def parse_page(self, response):
-        """@url https://www.washingtonpost.com/business/technology/improved-technology-saves-maple-syrup-producers-time-energy/2017/02/26/836c79d8-fc29-11e6-9b78-824ccab94435_story.html
+        """@url https://www.washingtonpost.com/news/politics/wp/2017/03/27/trumps-approval-hits-a-new-low-of-36-percent-but-thats-not-the-bad-news/
         @returns items 1
         @scrapes bodytext bylines fetchtime firstpubtime headline
         @scrapes keywords section source summary url
@@ -28,12 +28,20 @@ class WashingtonPostSpider(NewsSitemapSpider):
         l = NewsLoader(selector=s)
 
         # WaPo's ISO date/time strings are invalid: <datetime>-500 instead of
-        # <datetime>-05:00.
-        l.add_xpath('firstpubtime', '//*[@itemprop="datePublished" or @property="datePublished"]/@content', MapCompose(self.fix_iso_date)) # CreativeWork
+        # <datetime>-05:00. Note that the various standardised l.add_* methods
+        # will generate 'Failed to parse data' log items. We've got it properly
+        # here, so they aren't important.
+        l.add_xpath('firstpubtime',
+                    '//*[@itemprop="datePublished" or '
+                        '@property="datePublished"]/@content',
+                    MapCompose(self.fix_iso_date)) # CreativeWork
 
         # These are duplicated in the markup, so uniquise them.
-        l.add_xpath('bylines', '//*[@itemprop="author"]//*[@itemprop="name"]//text()', set)
-        l.add_xpath('section', '//*[contains(@class, "headline-kicker")]//text()')
+        l.add_xpath('bylines',
+                    '//*[@itemprop="author"]//*[@itemprop="name"]//text()',
+                    set)
+        l.add_xpath('section',
+                    '//*[contains(@class, "headline-kicker")]//text()')
 
 
         # Add a number of items of data that should be standardised across
@@ -49,5 +57,8 @@ class WashingtonPostSpider(NewsSitemapSpider):
         return l.load_item()
 
     def fix_iso_date(self, s):
-        return re.sub(r'^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}[+-])([0-9])([0-9]{2})$', r'\g<1>0\g<2>:\g<3>', s)
+        return re.sub(r'^([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}[+-])'
+                            '([0-9])([0-9]{2})$',
+                      r'\g<1>0\g<2>:\g<3>',
+                      s)
 
