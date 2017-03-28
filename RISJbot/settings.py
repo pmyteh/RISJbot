@@ -168,7 +168,8 @@ EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'RISJbot.pipelines.striprawpage.StripRawPage': 300,
+    'RISJbot.pipelines.sentiment.Sentiment': 100,
+    'RISJbot.pipelines.striprawpage.StripRawPage': 900,
 }
 
 # Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
