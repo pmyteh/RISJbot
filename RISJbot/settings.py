@@ -162,7 +162,8 @@ EXTENSIONS = {
     # Overridden version to use our own AWS buckets rather than a shared
     # ScrapingHub bucket.
 #    'RISJbot.extensions.dotscrapy.FlexibleDotScrapyPersistence': 0,
-    'scrapy_dotpersistence.DotScrapyPersistence': 1,
+    # Don't want both of these running.
+    'scrapy_dotpersistence.DotScrapyPersistence': 0,
     # Only designed to work on ScrapingHub - fiddle for local testing
 #    'RISJbot.utils._risj_dotscrapy_indirect': 0,
 #    'scrapy.extensions.telnet.TelnetConsole': None,
@@ -173,6 +174,10 @@ EXTENSIONS = {
 FLEXIBLEDOTSCRAPY_ENABLED = True
 FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
 # Also relies on AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, set above.
+# FIXME: The following lines should (according to the docs, allow the syncing
+#        to our own S3 bucket using scrapy_dotpersistence.DotScrapyPersistence.
+#        In practice, they seem to be being overridden by ScrapingHub, which is
+#        a little useless.
 ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
 ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
 ADDONS_AWS_USERNAME = None
