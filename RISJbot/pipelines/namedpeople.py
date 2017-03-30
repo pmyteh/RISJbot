@@ -24,6 +24,7 @@ class NamedPeople(object):
         for pkg in ['maxent_ne_chunker',
                     'averaged_perceptron_tagger',
                     'punkt',
+                    'words',
                    ]:
             nltk.download(pkg, download_dir=self.dir)
 
