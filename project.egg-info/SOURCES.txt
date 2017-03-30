@@ -11,6 +11,7 @@ RISJbot/dlmiddlewares/__init__.py
 RISJbot/dlmiddlewares/offsitedownloadershim.py
 RISJbot/dlmiddlewares/risjstripnull.py
 RISJbot/pipelines/__init__.py
+RISJbot/pipelines/namedpeople.py
 RISJbot/pipelines/readingage.py
 RISJbot/pipelines/sentiment.py
 RISJbot/pipelines/striprawpage.py

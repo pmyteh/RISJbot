@@ -1,5 +1,6 @@
 dateparser==0.5.1
 extruct[rdfa]==0.3.0a2
 textblob==0.12.0
+nltk==3.2.2
 #https://github.com/nltk/nltk_contrib/archive/c9da2c29777ca9df650740145f1f4a375ccac961.zip#egg=nltk_contrib==3.2.2
 
