@@ -51,12 +51,18 @@ class RefetchControl(object):
         self.dir = s.get('REFETCHCONTROL_DIR', os.getcwd())
         self.maxfetches = s.getint('REFETCHCONTROL_MAXFETCHES', 1)
         self.refetchsecs = s.getint('REFETCHCONTROL_REFETCHSECS', 0)
+        # If it's older than this, we don't want it - probably repeated
+        # fetch failures. This allows one refetchsecs period of accumulated
+        # slack. 
+        self.agelimit = s.getint('REFETCHCONTROL_AGELIMITSECS',
+                                 self.refetchsecs * (self.maxfetches + 1))
         self.refetchfromdb = s.getbool('REFETCHCONTROL_REFETCHFROMDB', False)
         self.reset = s.getbool('REFETCHCONTROL_RESET', False)
         # Grotty: see _schedule_url()
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
         self.dbs = {}
         self.stats = crawler.stats
+        self.idletrawled = False
         logger.debug("RefetchControl starting; dir: {}, "
                      "maxfetches: {}, refetchsecs: {}, reset: {}"
                      "".format(self.dir,
@@ -122,7 +128,7 @@ class RefetchControl(object):
            There should be no race with the main process_spider_output
            throughput."""
 
-        if not self.refetchfromdb:
+        if not self.refetchfromdb or self.idletrawled:
             return
 
         logger.debug("Trawling database for unfetched pages.")
@@ -131,11 +137,8 @@ class RefetchControl(object):
         # If it's newer than this, we don't want it
         cutofft = (datetime.datetime.utcnow()
                         - datetime.timedelta(seconds=self.refetchsecs))
-        # If it's older than this, we don't want it - probably repeated
-        # fetch failures.
-        oldsecs = self.refetchsecs * self.maxfetches
         cutoffold = (datetime.datetime.utcnow()
-                        - datetime.timedelta(seconds=oldsecs)) 
+                        - datetime.timedelta(seconds=self.agelimit)) 
         for row in c.execute('SELECT * FROM records WHERE '
                                 'time <= ? AND time > ? AND fetches < ?',
                              (cutofft, cutoffold, self.maxfetches)):
@@ -152,7 +155,9 @@ class RefetchControl(object):
                              )
                         )
             self._schedule_url(url, spider)
+        self.idletrawled = True
         logger.debug("Trawl finished.")
+
 
     def _schedule_url(self, url, spider):
         # This is slightly problematic (but unavaoidable).
@@ -197,17 +202,19 @@ class RefetchControl(object):
         _, nf, t = l
         tdiff = datetime.datetime.utcnow() - t
         if (nf >= self.maxfetches or
-               tdiff.total_seconds() < self.refetchsecs):
+               tdiff.total_seconds() < self.refetchsecs or
+               tdiff.total_seconds() > self.agelimit):
             # No. Drop.
             if nf < self.maxfetches:
-                logger.debug("Not fetching yet ({}/{} "
+                logger.debug("Not fetching ({}/{} "
                              "fetches, last at {}, {:.0f} seconds "
-                             "ago, min secs {}): {}".format(
+                             "ago, min secs {}, max secs {}): {}".format(
                                      nf,
                                      self.maxfetches,
                                      t.isoformat(),
                                      tdiff.total_seconds(),
                                      self.refetchsecs,
+                                     self.agelimit,
                                      r,
                                  )
                             )
