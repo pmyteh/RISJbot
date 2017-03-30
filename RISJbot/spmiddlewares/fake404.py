@@ -21,7 +21,7 @@ class Fake404Error(IgnoreRequest):
 
     def __init__(self, response, *args, **kwargs):
         self.response = response
-        super(RISJFake404Error, self).__init__(*args, **kwargs)
+        super(Fake404Error, self).__init__(*args, **kwargs)
 
 class Fake404(object):
     """Spider middleware to drop pages iff they are that annoyance on the web:
@@ -49,14 +49,14 @@ class Fake404(object):
         for regex, xp in self.detectionsigs:
             if regex.match(response.url):
                 if response.xpath(xp):
-                    raise RISJFake404Error(response,
-                                           'Ignoring "not found" response '
-                                           'with success HTTP code')
+                    raise Fake404Error(response,
+                                       'Ignoring "not found" response '
+                                       'with success HTTP code')
         return None # Success
 
     def process_spider_exception(self, response, exception, spider):
-        if isinstance(exception, RISJFake404Error):
-            spider.crawler.stats.inc_value('risjfake404/response_ignored_count')
+        if isinstance(exception, Fake404Error):
+            spider.crawler.stats.inc_value('fake404/response_ignored_count')
             logger.info(
                 'Ignoring response from %(response)r: Ignoring "not found" '
                 'response with success HTTP code',

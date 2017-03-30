@@ -49,8 +49,8 @@ RISJbot/spiders/us/yahoo.py
 RISJbot/spmiddlewares/__init__.py
 RISJbot/spmiddlewares/equivalentdomains.py
 RISJbot/spmiddlewares/extractjsonld.py
+RISJbot/spmiddlewares/fake404.py
 RISJbot/spmiddlewares/refetchcontrol.py
-RISJbot/spmiddlewares/risjfake404.py
 RISJbot/spmiddlewares/unwantedcontent.py
 project.egg-info/PKG-INFO
 project.egg-info/SOURCES.txt
