@@ -161,9 +161,9 @@ EXTENSIONS = {
 #    'scrapy_dotpersistence.DotScrapyPersistence': 0,
     # Overridden version to use our own AWS buckets rather than a shared
     # ScrapingHub bucket.
-#    'RISJbot.extensions.dotscrapy.FlexibleDotScrapyPersistence': 0,
+    'RISJbot.extensions.dotscrapy.FlexibleDotScrapyPersistence': 0,
     # Don't want both of these running.
-    'scrapy_dotpersistence.DotScrapyPersistence': 0,
+    'scrapy_dotpersistence.DotScrapyPersistence': None,
     # Only designed to work on ScrapingHub - fiddle for local testing
 #    'RISJbot.utils._risj_dotscrapy_indirect': 0,
 #    'scrapy.extensions.telnet.TelnetConsole': None,
@@ -182,10 +182,10 @@ FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
 #ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
 #ADDONS_AWS_USERNAME = None
 #ADDONS_S3_BUCKET = "reutersinstitute-risjbot"
-DOTSCRAPY_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
-DOTSCRAPY_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
-DOTSCRAPY_S3_FOLDER = None
-DOTSCRAPY_S3_BUCKET = "reutersinstitute-risjbot"
+#DOTSCRAPY_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+#DOTSCRAPY_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+#DOTSCRAPY_S3_FOLDER = None
+#DOTSCRAPY_S3_BUCKET = "reutersinstitute-risjbot"
 
 
 # TODO: Add an ML metadata-generating pipeline
