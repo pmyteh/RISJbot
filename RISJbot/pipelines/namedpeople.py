@@ -17,14 +17,15 @@ class NamedPeople(object):
     def __init__(self, crawler):
         self.crawler = crawler
         s = crawler.settings
-        self.dir = s.get('NLTKDATA_DIR', os.getcwd())
+        # Defaults to wherever NLTK normally keeps its data
+        self.dir = s.get('NLTKDATA_DIR', None)
         # Ensure necessary NLTK data is present. This can be persisted across
         # runs using DotScrapy Persistence if on ScrapingHub.
         nltk.download('maxent_ne_chunker', download_dir=self.dir)
         nltk.download('averaged_perceptron_tagger', download_dir=self.dir)
 
         logger.debug("NamedPeople starting; nltk_dir: {}".format(
-                        self.nltk_dir)
+                        self.dir)
                     )
 
     @classmethod
@@ -38,11 +39,13 @@ class NamedPeople(object):
             return item
 
         # Chunk 'named entities' (people, places, organisations etc.) as 
-        # (possibly hierarchical) nltk.Tree
+        # (possibly hierarchical) nltk.Tree.
         namedEnt = nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(body)))
         # Find the ones tagged "PERSON" and extract them. Note that the NE
         # recognition code is far from perfect and will pick up some non-people
-        # here.
+        # here. It's possible that we'd rather use a more robust library
+        # (like the Stanford NER java library) but difficult to do in-process
+        # on ScrapingHub.
         peopletup = [tuple(i.flatten()) for i in namedEnt if isinstance(i, nltk.Tree) and i.label() == "PERSON"]
         item['namedpeople'] = [' '.join(list(zip(*x))[0]) for x in peopletup]
         
