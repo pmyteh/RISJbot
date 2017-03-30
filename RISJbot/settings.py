@@ -123,13 +123,13 @@ RISJEXTRACTJSONLD_ENABLED = True
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'RISJbot.dlmiddlewares.offsitedownloadershim.OffsiteDownloaderShim': 100,
-    'RISJbot.dlmiddlewares.risjstripnull.RISJStripNull': 543,
+    'RISJbot.dlmiddlewares.stripnull.StripNull': 543,
 }
 
 # AP returns responses will ASCII NUL bytes embedded in them.
 # This is very bad for Scrapy's parsing code. Strip them.
-RISJSTRIPNULL_ENABLED = True
-RISJSTRIPNULL_SPIDERS = ['ap']
+STRIPNULL_ENABLED = True
+#STRIPNULL_SPIDERS = ['ap']
 
 # Map all 'edition.cnn.com' URLs to the equivalent 'www.cnn.com' (dedupe)
 # TN, 2017/03/27

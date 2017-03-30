@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class RISJStripNull(object):
+class StripNull(object):
     """Downloader middleware to discard ASCII NUL bytes from Responses. This
        really(!) shouldn't be necessary, but bigstory.ap.org/latest (and
        possibly other pages from bigstory.ap.org) are studded with NUL bytes,
@@ -14,9 +14,8 @@ class RISJStripNull(object):
     """
 
     def __init__(self, stats, settings):
-        if not settings.getbool('RISJSTRIPNULL_ENABLED'):
+        if not settings.getbool('STRIPNULL_ENABLED'):
             raise NotConfigured
-        self.spiders = settings.get('RISJSTRIPNULL_SPIDERS')
         self.stats = stats
 
     @classmethod
@@ -24,16 +23,12 @@ class RISJStripNull(object):
         return cls(crawler.stats, crawler.settings)
 
     def process_response(self, request, response, spider):
-        if spider.name not in self.spiders:
-            self.stats.inc_value('risjstripnull/skipped', spider=spider)
-            return response
-
         newbody = bytes([x for x in response.body if x != 0])
 
         if len(newbody) < len(response.body):
-            self.stats.inc_value('risjstripnull/stripped', spider=spider)
+            self.stats.inc_value('stripnull/stripped', spider=spider)
             return response.replace(body = newbody)
         else:
-            self.stats.inc_value('risjstripnull/clean', spider=spider)
+            self.stats.inc_value('stripnull/clean', spider=spider)
             return response
 
