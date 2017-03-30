@@ -21,6 +21,9 @@ class NamedPeople(object):
         self.dir = s.get('NLTKDATA_DIR', None)
         # Ensure necessary NLTK data is present. This can be persisted across
         # runs using DotScrapy Persistence if on ScrapingHub.
+        # TODO: Should check if they're present by trying to load them, then
+        #       download on exception. nltk.download() checks if up to date
+        #       as well, so this generates latency and network traffic.
         for pkg in ['maxent_ne_chunker',
                     'averaged_perceptron_tagger',
                     'punkt',

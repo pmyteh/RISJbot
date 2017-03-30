@@ -5,7 +5,7 @@ from scrapy_dotpersistence import DotScrapyPersistence
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
-logger = logging.getLogger("foo")
+logger = logging.getLogger(__name__)
 
 class FlexibleDotScrapyPersistence(DotScrapyPersistence):
     """A subclass of scrapy_dotpersistence.DotScrapyPersistence (==0.3.0)

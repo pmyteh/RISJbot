@@ -128,11 +128,17 @@ class RefetchControl(object):
         logger.debug("Trawling database for unfetched pages.")
 
         c = self.dbs[spider.name].cursor()
+        # If it's newer than this, we don't want it
         cutofft = (datetime.datetime.utcnow()
                         - datetime.timedelta(seconds=self.refetchsecs))
+        # If it's older than this, we don't want it - probably repeated
+        # fetch failures.
+        oldsecs = self.refetchsecs * self.maxfetches
+        cutoffold = (datetime.datetime.utcnow()
+                        - datetime.timedelta(seconds=oldsecs)) 
         for row in c.execute('SELECT * FROM records WHERE '
-                                'time <= ? AND fetches < ?',
-                             (cutofft, self.maxfetches)):
+                                'time <= ? AND time > ? AND fetches < ?',
+                             (cutofft, cutoffold, self.maxfetches)):
             _, url, nf, t = row
             tdiff = datetime.datetime.utcnow() - t
             logger.debug("Scheduling refetch from database crawl "
@@ -170,10 +176,13 @@ class RefetchControl(object):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
+        # Pass this through, so we can link any Response to this request
+        r.meta['refetchcontrol_key'] = key
+
         c = self.dbs[spider.name].cursor().execute(    
                 'SELECT url, fetches, time FROM records WHERE key=?', (key,))
-
         l = c.fetchone()
+
         if l is None:
             # First fetch. Log and return.
             logger.debug("First fetch: {}".format(r))
@@ -185,7 +194,7 @@ class RefetchControl(object):
         # Fetched at least once.
         # Are we allowed another fetch? If so, have we waited the
         # minimum allowable period?
-        url, nf, t = l
+        _, nf, t = l
         tdiff = datetime.datetime.utcnow() - t
         if (nf >= self.maxfetches or
                tdiff.total_seconds() < self.refetchsecs):
@@ -229,7 +238,11 @@ class RefetchControl(object):
         c = self.dbs[spider.name].cursor()
 
         query = 'SELECT fetches FROM records WHERE key=?'
-        key = self._get_key(response.request)
+        try:
+            key = response.meta['refetchcontrol_key']
+        except KeyError:
+            logger.info("No meta['refetchcontrol_key']: {}".format(r))
+            key = self._get_key(response.request)
         c.execute(query, (key,))
         l = c.fetchone()
         if l is None:
