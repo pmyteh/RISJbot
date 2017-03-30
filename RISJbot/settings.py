@@ -178,10 +178,14 @@ FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
 #        to our own S3 bucket using scrapy_dotpersistence.DotScrapyPersistence.
 #        In practice, they seem to be being overridden by ScrapingHub, which is
 #        a little useless.
-ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
-ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
-ADDONS_AWS_USERNAME = None
-ADDONS_S3_BUCKET = "reutersinstitute-risjbot"
+#ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+#ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+#ADDONS_AWS_USERNAME = None
+#ADDONS_S3_BUCKET = "reutersinstitute-risjbot"
+DOTSCRAPY_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+DOTSCRAPY_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+DOTSCRAPY_S3_FOLDER = None
+DOTSCRAPY_S3_BUCKET = "reutersinstitute-risjbot"
 
 
 # TODO: Add an ML metadata-generating pipeline
