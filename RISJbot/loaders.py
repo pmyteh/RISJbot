@@ -316,8 +316,6 @@ class NewsLoader(ItemLoader):
            is normally metadata from the RSS feed which linked to the article,
            and may in the future also be from Google News sitemaps."""
         try:
-            from pprint import pformat as pf
-            logger.debug('Newsmeta: '+pf(response.meta['newsmeta']))
             for k, v in response.meta['newsmeta'].items():
                 self.add_value(k, v)
         except KeyError:
