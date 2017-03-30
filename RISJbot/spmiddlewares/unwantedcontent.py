@@ -11,7 +11,7 @@ from scrapy.exceptions import NotConfigured
 
 logger = logging.getLogger(__name__)
 
-class RISJUnwantedContent(object):
+class UnwantedContent(object):
     """Spider middleware to process a response's selector by removing a
        (configurable) set of elements from it. This is used to strip things
        like figures from the content before passing the body on to the parsing
@@ -34,9 +34,9 @@ class RISJUnwantedContent(object):
        HTML/XML parsing library, at which point this would fail.
     """
     def __init__(self, settings):
-        if not settings.getbool('RISJUNWANTEDCONTENT_ENABLED'):
+        if not settings.getbool('UNWANTEDCONTENT_ENABLED'):
             raise NotConfigured
-        self.xpaths = settings.get('RISJUNWANTEDCONTENT_XPATHS')
+        self.xpaths = settings.get('UNWANTEDCONTENT_XPATHS')
 
     @classmethod
     def from_crawler(cls, crawler):

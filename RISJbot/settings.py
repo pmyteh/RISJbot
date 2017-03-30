@@ -86,7 +86,7 @@ SPIDER_MIDDLEWARES = {
     # Note: Should be after RefetchControl, to ensure that the URLs stored
     #       are the altered "canonical" ones.
     'RISJbot.spmiddlewares.equivalentdomains.EquivalentDomains': 900,
-    'RISJbot.spmiddlewares.risjunwantedcontent.RISJUnwantedContent': 950,
+    'RISJbot.spmiddlewares.unwantedcontent.UnwantedContent': 950,
 }
 
 # Enable RefetchControl, 8 fetches total, every 3 hours, including a
@@ -98,12 +98,12 @@ REFETCHCONTROL_REFETCHFROMDB = True
 REFETCHCONTROL_RQCALLBACK = 'spider.parse_page'
 REFETCHCONTROL_DIR = data_path('RefetchControl', createdir=True)
 
-# Enable RISJUnwantedContent, stripping figures (TN, 2017-02-27)
-RISJUNWANTEDCONTENT_ENABLED = True
-RISJUNWANTEDCONTENT_XPATHS = ['//figure',
-                              '//script',
-                              '//style',
-                              '//form',]
+# Enable UnwantedContent, stripping figures etc. (TN, 2017-02-27)
+UNWANTEDCONTENT_ENABLED = True
+UNWANTEDCONTENT_XPATHS = ['//figure',
+                          '//script',
+                          '//style',
+                          '//form',]
 
 # Enable RISJFake404, dropping responses that are actually "page not found",
 # but come with an improper HTTP 200 success code. Lookin' at you, foxnews.com.
