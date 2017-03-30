@@ -21,8 +21,11 @@ class NamedPeople(object):
         self.dir = s.get('NLTKDATA_DIR', None)
         # Ensure necessary NLTK data is present. This can be persisted across
         # runs using DotScrapy Persistence if on ScrapingHub.
-        nltk.download('maxent_ne_chunker', download_dir=self.dir)
-        nltk.download('averaged_perceptron_tagger', download_dir=self.dir)
+        for pkg in ['maxent_ne_chunker',
+                    'averaged_perceptron_tagger',
+                    'punkt',
+                   ]:
+            nltk.download(pkg, download_dir=self.dir)
 
         logger.debug("NamedPeople starting; nltk_dir: {}".format(
                         self.dir)
