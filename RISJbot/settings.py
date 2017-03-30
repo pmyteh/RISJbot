@@ -10,6 +10,8 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
 from RISJbot.items import NewsItem
+from scrapy.utils.project import data_path
+import os
 
 BOT_NAME = 'RISJbot'
 
@@ -20,6 +22,11 @@ NEWSPIDER_MODULE = 'RISJbot.spiders'
 
 # Location of templates for 'scrapy genspider' etc.
 TEMPLATES_DIR = 'RISJbot/templates'
+
+# Location of downloaded NLTK models etc. Need to set the environment variable
+# so the NLTK libraries can find them.
+NLTKDATA_DIR = data_path('nltk_data', createdir=True)
+os.environ['NLTK_DATA'] = NLTKDATA_DIR
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'RISJbot (+http://reutersinstitute.politics.ox.ac.uk/)'
@@ -89,7 +96,7 @@ REFETCHCONTROL_MAXFETCHES = 8
 REFETCHCONTROL_REFETCHSECS = 10800
 REFETCHCONTROL_REFETCHFROMDB = True
 REFETCHCONTROL_RQCALLBACK = 'spider.parse_page'
-REFETCHCONTROL_DIR = '.scrapy/RefetchControl'
+REFETCHCONTROL_DIR = data_path('RefetchControl', createdir=True)
 
 # Enable RISJUnwantedContent, stripping figures (TN, 2017-02-27)
 RISJUNWANTEDCONTENT_ENABLED = True
@@ -170,6 +177,7 @@ EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 ITEM_PIPELINES = {
     'RISJbot.pipelines.sentiment.Sentiment': 100,
     'RISJbot.pipelines.wordcount.WordCount': 200,
+    'RISJbot.pipelines.namedpeople.NamedPeople': 300,
     'RISJbot.pipelines.striprawpage.StripRawPage': 900,
 }
 

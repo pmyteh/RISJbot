@@ -27,5 +27,6 @@ class NewsItem(scrapy.Item):
     wordcount = scrapy.Field()
     sentiment = scrapy.Field()
     subjectivity = scrapy.Field()
-    gender = scrapy.Field()
+    namedpeople = scrapy.Field()
+    female = scrapy.Field()
     readingage = scrapy.Field()
