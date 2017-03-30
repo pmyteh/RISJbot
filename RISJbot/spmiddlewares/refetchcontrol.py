@@ -128,7 +128,7 @@ class RefetchControl(object):
            There should be no race with the main process_spider_output
            throughput."""
 
-        if not self.refetchfromdb or self.idletrawled:
+        if self.idletrawled or not self.refetchfromdb:
             return
 
         logger.debug("Trawling database for unfetched pages.")
@@ -142,7 +142,7 @@ class RefetchControl(object):
         for row in c.execute('SELECT * FROM records WHERE '
                                 'time <= ? AND time > ? AND fetches < ?',
                              (cutofft, cutoffold, self.maxfetches)):
-            _, url, nf, t = row
+            key, url, nf, t = row
             tdiff = datetime.datetime.utcnow() - t
             logger.debug("Scheduling refetch from database crawl "
                          "({} fetches, last at {}, {:.0f} seconds ago, "
@@ -155,17 +155,26 @@ class RefetchControl(object):
                                  url,
                              )
                         )
-            self._schedule_url(url, spider)
+            self._schedule_url(url, key, spider)
+            self.stats.inc_value('refetchcontrol/trawled', spider=spider)
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
 
-    def _schedule_url(self, url, spider):
+    def _schedule_url(self, url, key, spider):
         # This is slightly problematic (but unavaoidable).
         # engine.crawl() is not a published interface, and is not
         # to be considered stable per the devs, though there is a
         # good deal of published code that uses it to schedule URLs
         # like this in the absence of an official alternative.
+        #
+        # Note that the Request is not sent through spider middleware on the
+        # way out, as it doesn't come from a spider. It will go through any
+        # downloader middleware, and Responses will come through spider
+        # middleware as normal.
+        #
+        # In particular, that means that it won't trigger our own
+        # _process_request code.
         #
         # FIXME: Furthermore, the callback is a problem: for spiders which
         #        inherit from XMLFeedSpider, the default spider.parse()
@@ -177,18 +186,12 @@ class RefetchControl(object):
         #        different interfaces commingled in the same project :-(
         rq = Request(url,
                      callback=eval(self.rqcallback),
-                     meta={'refetchcontrol_trawled': True}
+                     meta={'refetchcontrol_trawled': True,
+                           'refetchcontrol_key': key}
                     )
         self.crawler.engine.crawl(rq, spider)
-            
 
     def _process_request(self, r, spider):
-        self.stats.inc_value('refetchcontrol/_process_request', spider=spider)
-
-        if r.meta.get('refetchcontrol_trawled'):
-            self.stats.inc_value('refetchcontrol/_process_request_trawled',
-                                    spider=spider)
-
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
@@ -268,22 +271,21 @@ class RefetchControl(object):
         try:
             key = response.meta['refetchcontrol_key']
         except KeyError:
-            logger.info("No meta['refetchcontrol_key'] for {}: {}".format(
-                            response, response.meta)
-                       )
+            logger.warning("No meta['refetchcontrol_key'] for {}: {}".format(
+                                response, response.meta)
+                          )
             key = self._get_key(response.request)
         c.execute(query, (key,))
         l = c.fetchone()
+
         if l is None:
             nf = 1
         else:
             nf = l[0] + 1
 
-        url = response.url
-        t = datetime.datetime.utcnow()
         query = ("INSERT OR REPLACE INTO records(key, url, fetches, time) "
                  "VALUES(?, ?, ?, ?)")
-        c.execute(query, (key, url, nf, t))
+        c.execute(query, (key, response.url, nf, datetime.datetime.utcnow()))
         self.dbs[spider.name].commit()
 
         # TODO: Consider adding extra middleware to drop if it hasn't

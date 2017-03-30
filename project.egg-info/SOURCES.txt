@@ -9,7 +9,7 @@ RISJbot/settings.py
 RISJbot/utils.py
 RISJbot/dlmiddlewares/__init__.py
 RISJbot/dlmiddlewares/offsitedownloadershim.py
-RISJbot/dlmiddlewares/risjstripnull.py
+RISJbot/dlmiddlewares/stripnull.py
 RISJbot/extensions/__init__.py
 RISJbot/extensions/dotscrapy.py
 RISJbot/pipelines/__init__.py
@@ -48,10 +48,10 @@ RISJbot/spiders/us/washingtonpost.py
 RISJbot/spiders/us/yahoo.py
 RISJbot/spmiddlewares/__init__.py
 RISJbot/spmiddlewares/equivalentdomains.py
+RISJbot/spmiddlewares/extractjsonld.py
 RISJbot/spmiddlewares/refetchcontrol.py
-RISJbot/spmiddlewares/risjextractjsonld.py
 RISJbot/spmiddlewares/risjfake404.py
-RISJbot/spmiddlewares/risjunwantedcontent.py
+RISJbot/spmiddlewares/unwantedcontent.py
 project.egg-info/PKG-INFO
 project.egg-info/SOURCES.txt
 project.egg-info/dependency_links.txt
