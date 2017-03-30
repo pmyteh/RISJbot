@@ -3,7 +3,7 @@ extruct[rdfa]==0.3.0a2
 textblob==0.12.0
 nltk==3.2.2
 numpy==1.12.1 # Requirement of some pickled data we use from nltk
-scrapy-dotpersistence==0.3.0
-https://github.com/pmyteh/scrapy-dotpersistence/archive/49c2f36811d3e3dc7142f15c76feab6bc6dea862.zip#egg=scrapy-dotpersistence==0.3.0
+#scrapy-dotpersistence==0.3.0
+https://github.com/pmyteh/scrapy-dotpersistence/archive/20fe43b3b68be7de0ee771b6a89acdc25ee5677b.zip#egg=scrapy-dotpersistence==0.3.0
 #https://github.com/nltk/nltk_contrib/archive/c9da2c29777ca9df650740145f1f4a375ccac961.zip#egg=nltk_contrib==3.2.2
 
