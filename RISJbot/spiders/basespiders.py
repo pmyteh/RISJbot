@@ -61,8 +61,12 @@ class NewsSitemapSpider(SitemapSpider):
 
     def start_requests(self):
         for url in self.sitemap_urls:
-            # Add Meta key for collection in middleware
-            yield Request(url, self._parse_sitemap, meta={'sitemap': True})
+            # Add Meta key for collection in middleware, and passthrough key
+            # for RefetchControl
+            yield Request(url,
+                          self._parse_sitemap,
+                          meta={'sitemap': True,
+                                'refetchcontrol_pass': True})
 
     def parse(self, response):
         return self.parse_page(response)

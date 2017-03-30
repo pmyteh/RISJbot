@@ -181,6 +181,11 @@ class RefetchControl(object):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
+        if 'refetchcontrol_pass' in r.meta:
+            logger.debug('Passing: {}'.format(r))
+            self.stats.inc_value('refetchcontrol/passed', spider=spider)
+            return r
+
         # Pass this through, so we can link any Response to this request
         r.meta['refetchcontrol_key'] = key
 
@@ -242,13 +247,19 @@ class RefetchControl(object):
         # Is Item; update the database with the new number of fetches
         # and timestamp, then pass the Item on.
 
+        if response.meta.get('refreshcontrol_pass'):
+            # Not to be logged.
+            return item
+
         c = self.dbs[spider.name].cursor()
 
         query = 'SELECT fetches FROM records WHERE key=?'
         try:
             key = response.meta['refetchcontrol_key']
         except KeyError:
-            logger.info("No meta['refetchcontrol_key']: {}".format(r))
+            logger.info("No meta['refetchcontrol_key'] for {}: {}".format(
+                            response, response.meta)
+                       )
             key = self._get_key(response.request)
         c.execute(query, (key,))
         l = c.fetchone()
