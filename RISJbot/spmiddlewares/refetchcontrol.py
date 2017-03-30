@@ -146,11 +146,12 @@ class RefetchControl(object):
             tdiff = datetime.datetime.utcnow() - t
             logger.debug("Scheduling refetch from database crawl "
                          "({} fetches, last at {}, {:.0f} seconds ago, "
-                         "min secs {}): {}".format(
+                         "min/max secs {}/{}): {}".format(
                                  nf,
                                  t.isoformat(),
                                  tdiff.total_seconds(),
                                  self.refetchsecs,
+                                 self.agelimit,
                                  url,
                              )
                         )
@@ -174,10 +175,20 @@ class RefetchControl(object):
         #        Responses, but this does not exist in all spiders. This
         #        makes this code fairly non-portable between spiders with
         #        different interfaces commingled in the same project :-(
-        self.crawler.engine.crawl(Request(url, callback=eval(self.rqcallback)),
-                                  spider)
+        rq = Request(url,
+                     callback=eval(self.rqcallback),
+                     meta={'refetchcontrol_trawled': True}
+                    )
+        self.crawler.engine.crawl(rq, spider)
+            
 
     def _process_request(self, r, spider):
+        self.stats.inc_value('refetchcontrol/_process_request', spider=spider)
+
+        if r.meta.get('refetchcontrol_trawled'):
+            self.stats.inc_value('refetchcontrol/_process_request_trawled',
+                                    spider=spider)
+
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
@@ -223,10 +234,10 @@ class RefetchControl(object):
                                      r,
                                  )
                             )
-            if self.stats:
-                self.stats.inc_value('refetchcontrol/skipped',
-                                     spider=spider)
+
+            self.stats.inc_value('refetchcontrol/skipped', spider=spider)
             return None
+
         # Yes. Log, add to stats, return
         logger.debug("Refetching ({} fetches, "
                      "last at {}, {:.0f} seconds ago, "
@@ -238,8 +249,7 @@ class RefetchControl(object):
                              r,
                          )
                     )
-        if self.stats:
-            self.stats.inc_value('refetchcontrol/refetched', spider=spider)
+        self.stats.inc_value('refetchcontrol/refetched', spider=spider)
         return r
         
 
@@ -247,7 +257,8 @@ class RefetchControl(object):
         # Is Item; update the database with the new number of fetches
         # and timestamp, then pass the Item on.
 
-        if response.meta.get('refreshcontrol_pass'):
+        if response.meta.get('refetchcontrol_pass'):
+            sellf.stats.inc_value('refetchcontrol/passed_item', spider=spider)
             # Not to be logged.
             return item
 
