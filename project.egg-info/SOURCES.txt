@@ -10,6 +10,8 @@ RISJbot/utils.py
 RISJbot/dlmiddlewares/__init__.py
 RISJbot/dlmiddlewares/offsitedownloadershim.py
 RISJbot/dlmiddlewares/risjstripnull.py
+RISJbot/extensions/__init__.py
+RISJbot/extensions/dotscrapy.py
 RISJbot/pipelines/__init__.py
 RISJbot/pipelines/namedpeople.py
 RISJbot/pipelines/readingage.py

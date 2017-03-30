@@ -42,7 +42,7 @@ ROBOTSTXT_OBEY = True
 from .aws_credentials import *
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
-FEED_URI = 's3://reutersinstitute-risjbot/test/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
+FEED_URI = 's3://reutersinstitute-risjbot/166147/test/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
 FEED_FORMAT = 'jsonlines'
 # FEED_EXPORT_FIELDS = list(NewsItem().fields.keys()) # Critical for CSV
 FEED_STORE_EMPTY = True
@@ -157,19 +157,27 @@ EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
+EXTENSIONS = {
 #    'scrapy_dotpersistence.DotScrapyPersistence': 0,
+    # Overridden version to use our own AWS buckets rather than a shared
+    # ScrapingHub bucket.
+#    'RISJbot.extensions.dotscrapy.FlexibleDotScrapyPersistence': 0,
+    'scrapy_dotpersistence.DotScrapyPersistence': 1,
     # Only designed to work on ScrapingHub - fiddle for local testing
 #    'RISJbot.utils._risj_dotscrapy_indirect': 0,
 #    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+}
 
-# Persist the .scrapy directory via AWS
-#DOTSCRAPY_ENABLED = True
-#ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
-#ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
-#ADDONS_AWS_USERNAME = "username"
-#ADDONS_S3_BUCKET = 'reutersinstitute-risjbot'
+# Won't run locally, despite this setting: relies on variables set by
+# ScrapingHub.
+FLEXIBLEDOTSCRAPY_ENABLED = True
+FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
+# Also relies on AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, set above.
+ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+ADDONS_AWS_USERNAME = None
+ADDONS_S3_BUCKET = "reutersinstitute-risjbot"
+
 
 # TODO: Add an ML metadata-generating pipeline
 # Configure item pipelines
