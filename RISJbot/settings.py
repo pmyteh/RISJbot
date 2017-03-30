@@ -79,7 +79,7 @@ SPIDER_MIDDLEWARES = {
     #       OffsiteDownloaderShim. Don't load twice.
     'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': None,
     # Note: Should be before RefetchControl, to ensure that fetch gets logged:
-    'RISJbot.spmiddlewares.risjfake404.RISJFake404': 222,
+    'RISJbot.spmiddlewares.fake404.Fake404': 222,
     # Note: Should be before any middleware which discards <scripts>:
     'RISJbot.spmiddlewares.extractjsonld.ExtractJSONLD': 300,
     'RISJbot.spmiddlewares.refetchcontrol.RefetchControl': 800,
@@ -105,11 +105,11 @@ UNWANTEDCONTENT_XPATHS = ['//figure',
                           '//style',
                           '//form',]
 
-# Enable RISJFake404, dropping responses that are actually "page not found",
+# Enable Fake404, dropping responses that are actually "page not found",
 # but come with an improper HTTP 200 success code. Lookin' at you, foxnews.com.
-RISJFAKE404_ENABLED = True
+FAKE404_ENABLED = True
 # List of ( url regex, matching xpath ) tuples
-RISJFAKE404_DETECTIONSIGS = [
+FAKE404_DETECTIONSIGS = [
     ( r'https?://(www\.)?foxnews\.com/',
         '//h1[contains(., "Something has gone wrong")]'),
     ( r'https?://(www\.)?nbcnews\.com/',

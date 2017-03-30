@@ -16,14 +16,14 @@ from scrapy.exceptions import IgnoreRequest
 
 logger = logging.getLogger(__name__)
 
-class RISJFake404Error(IgnoreRequest):
+class Fake404Error(IgnoreRequest):
     """A fake 404 page response was found and filtered"""
 
     def __init__(self, response, *args, **kwargs):
         self.response = response
         super(RISJFake404Error, self).__init__(*args, **kwargs)
 
-class RISJFake404(object):
+class Fake404(object):
     """Spider middleware to drop pages iff they are that annoyance on the web:
        the 404 'not found' response returned as a branded page with HTTP code
        200 (which should indicate success).
@@ -34,11 +34,11 @@ class RISJFake404(object):
        others might.
     """
     def __init__(self, settings):
-        if not settings.getbool('RISJFAKE404_ENABLED'):
+        if not settings.getbool('FAKE404_ENABLED'):
             raise NotConfigured
 
         # List of ( url re object, matching xpath ) tuples
-        detsigs = settings.get('RISJFAKE404_DETECTIONSIGS')
+        detsigs = settings.get('FAKE404_DETECTIONSIGS')
         self.detectionsigs = [(re.compile(x), y) for x, y in detsigs]
 
     @classmethod
