@@ -81,7 +81,7 @@ SPIDER_MIDDLEWARES = {
     # Note: Should be before RefetchControl, to ensure that fetch gets logged:
     'RISJbot.spmiddlewares.risjfake404.RISJFake404': 222,
     # Note: Should be before any middleware which discards <scripts>:
-    'RISJbot.spmiddlewares.risjextractjsonld.RISJExtractJSONLD': 300,
+    'RISJbot.spmiddlewares.extractjsonld.ExtractJSONLD': 300,
     'RISJbot.spmiddlewares.refetchcontrol.RefetchControl': 800,
     # Note: Should be after RefetchControl, to ensure that the URLs stored
     #       are the altered "canonical" ones.
@@ -116,8 +116,8 @@ RISJFAKE404_DETECTIONSIGS = [
         '//h2[contains(., "This live stream has ended")]'),
 ]
 
-# Enable RISJExtractJSONLD; extract JSON-LD encoded metadata (TN, 2017-03-03)
-RISJEXTRACTJSONLD_ENABLED = True
+# Enable ExtractJSONLD; extract JSON-LD encoded metadata (TN, 2017-03-03)
+EXTRACTJSONLD_ENABLED = True
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
