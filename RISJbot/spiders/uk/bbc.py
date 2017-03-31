@@ -51,6 +51,7 @@ class BBCSpider(NewsRSSFeedSpider):
 
         l.add_xpath('bodytext', '//div[contains(@class, "main_article_text")]//text()') # Newsbeat
         l.add_xpath('bodytext', '//div[contains(@class, "map-body")]//text()') # media-asset-page
+        l.add_xpath('bodytext', '//div[contains(@class, "story-body")]//text()') # Sport
 
         match = re.match
         # Newsbeat seems to use a different CMS, which doesn't supply the
@@ -63,11 +64,7 @@ class BBCSpider(NewsRSSFeedSpider):
 #                yield re.sub(r'.*[Bb]y (.*)', r'\1', s).strip()
         l.add_xpath('bylines', '//span[contains(@class, "byline__name")]/text()')#, strip_by) # lambda y: map(lambda x: re.sub(r'.*By (.*)', r'\1', x).strip(), y))
         l.add_xpath('bylines', '//p[contains(@class, "byline")]/text()')#, strip_by) # lambda y: map(lambda x: re.sub(r'.*By (.*)', r'\1', x).strip(), y)) # Newsbeat
-
-
-
-
-
+        l.add_xpath('bylines', '//*[contains(@class, "story__byline")]//p[contains(@class, "gel-long-primer") and not(contains(@class, "gel-long-primer-bold"))]/text()') # Sport. Grot selecting by layout code.
 
         # TODO: Keywords (none?)
 
