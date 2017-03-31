@@ -24,14 +24,13 @@ class NYTimesSpider(NewsSitemapSpider):
         # There aren't native scrapy loader/selector methods for this.        
         mutate_selector_del_xpath(s, '//footer[contains(@class, "story-footer")]')
         mutate_selector_del_xpath(s, '//*[contains(@class, "nocontent")]')
+        mutate_selector_del_xpath(s, '//*[contains(@class, "visually-hidden")]')
 
         l = NewsLoader(selector=s)
 
         l.add_value('source', 'New York Times')
         # Response header from NYT leads to non-canonical URL with ?_r=0 at end
         l.add_xpath('url', 'head/link[@rel="canonical"]/@href')
-
-        l.add_xpath('bodytext', '//*[contains(@class, "story-body")]//text()')
 
         # Add a number of items of data that should be standardised across
         # providers. Can override these (for TakeFirst() fields) by making
@@ -42,6 +41,13 @@ class NYTimesSpider(NewsSitemapSpider):
         l.add_schemaorg(response)
         l.add_opengraph()
         l.add_scrapymeta(response)
+
+        l.add_xpath('bodytext', '//*[contains(@class, "story-body") or '
+                                    'contains(@class, "Post__body")]//text()')
+        l.add_xpath('bodytext', '//div[contains(@class, "body--story")]//p//text()')
+        l.add_xpath('headline', '//*[contains(@class, "Post__headline")]//text()')
+        l.add_xpath('section', '//*[contains(@class, "Post__kicker")]//text()')
+
 
         return l.load_item()
 
