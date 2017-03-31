@@ -322,4 +322,8 @@ class NewsLoader(ItemLoader):
         except KeyError:
             pass
 
+        self.add_value('previousfetches',
+                       response.meta.get('refetchcontrol_previous')
+                      )
+
            

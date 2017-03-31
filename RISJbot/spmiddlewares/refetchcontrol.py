@@ -155,13 +155,17 @@ class RefetchControl(object):
                                  url,
                              )
                         )
-            self._schedule_url(url, key, spider)
+            self._schedule_url(url,
+                               meta={'refetchcontrol_trawled': True,
+                                     'refetchcontrol_key': key,
+                                     'refetchcontrol_previous': nf,},
+                               spider)
             self.stats.inc_value('refetchcontrol/trawled', spider=spider)
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
 
-    def _schedule_url(self, url, key, spider):
+    def _schedule_url(self, url, meta, spider):
         # This is slightly problematic (but unavaoidable).
         # engine.crawl() is not a published interface, and is not
         # to be considered stable per the devs, though there is a
@@ -186,8 +190,7 @@ class RefetchControl(object):
         #        different interfaces commingled in the same project :-(
         rq = Request(url,
                      callback=eval(self.rqcallback),
-                     meta={'refetchcontrol_trawled': True,
-                           'refetchcontrol_key': key}
+                     meta=meta
                     )
         self.crawler.engine.crawl(rq, spider)
 
@@ -213,6 +216,7 @@ class RefetchControl(object):
             if self.stats:
                 self.stats.inc_value('refetchcontrol/firstfetch',
                                      spider=spider)
+            r.meta['refetchcontrol_previous'] = 0
             return r
 
         # Fetched at least once.
@@ -237,7 +241,6 @@ class RefetchControl(object):
                                      r,
                                  )
                             )
-
             self.stats.inc_value('refetchcontrol/skipped', spider=spider)
             return None
 
@@ -252,6 +255,7 @@ class RefetchControl(object):
                              r,
                          )
                     )
+        r.meta['refetchcontrol_previous'] = nf
         self.stats.inc_value('refetchcontrol/refetched', spider=spider)
         return r
         
