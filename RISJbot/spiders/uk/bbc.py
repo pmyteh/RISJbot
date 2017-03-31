@@ -49,7 +49,7 @@ class BBCSpider(NewsRSSFeedSpider):
         l.add_opengraph()
         l.add_scrapymeta(response)
 
-        l.add_xpath('bodytext', '//article//div[contains(@class, "main_article_text")]//text()') # Newsbeat
+        l.add_xpath('bodytext', '//div[contains(@class, "main_article_text")]//text()') # Newsbeat
         l.add_xpath('bodytext', '//div[contains(@class, "map-body")]//text()') # media-asset-page
 
         match = re.match
