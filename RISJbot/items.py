@@ -29,4 +29,5 @@ class NewsItem(scrapy.Item):
     subjectivity = scrapy.Field()
     namedpeople = scrapy.Field()
     female = scrapy.Field()
-    readingage = scrapy.Field()
+    kincaidgradelevel = scrapy.Field()
+    fleschreadingease = scrapy.Field()
