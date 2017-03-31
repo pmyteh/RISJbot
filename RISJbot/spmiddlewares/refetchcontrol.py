@@ -156,9 +156,9 @@ class RefetchControl(object):
                              )
                         )
             self._schedule_url(url,
-                               meta={'refetchcontrol_trawled': True,
-                                     'refetchcontrol_key': key,
-                                     'refetchcontrol_previous': nf,},
+                               {'refetchcontrol_trawled': True,
+                                'refetchcontrol_key': key,
+                                'refetchcontrol_previous': nf,},
                                spider)
             self.stats.inc_value('refetchcontrol/trawled', spider=spider)
         self.idletrawled = True

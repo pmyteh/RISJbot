@@ -46,10 +46,10 @@ class ReutersSpider(NewsSitemapSpider):
         # l.add_* calls above this line, or supplement gaps by making them
         # below.
         l.add_fromresponse(response)
-        #l.add_htmlmeta()
+        l.add_htmlmeta()
         l.add_schemaorg(response)
         #l.add_opengraph()
-        #l.add_scrapymeta(response)
+        l.add_scrapymeta(response)
         #l.add_schemaorg_bylines()
         #l.add_dublincore()
 
