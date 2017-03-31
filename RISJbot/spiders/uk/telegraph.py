@@ -42,4 +42,7 @@ class TelegraphSpider(NewsSitemapSpider):
         l.add_opengraph()
         l.add_scrapymeta(response)
 
+        if response.xpath('//div[contains(@class, "premium-paywall")]'):
+            l.add_value('notes', 'Premium paywall')
+
         return l.load_item()

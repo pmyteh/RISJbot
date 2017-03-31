@@ -28,7 +28,9 @@ def _remove_fluff(strl):
     for s in strl:
         if s.startswith('http'):
             continue
-        yield re.sub(r'.*[Bb]y (.*)', r'\1', s).strip()
+        s = re.sub(r'.*[Bb]y ', r'', s).strip()
+        if s:
+            yield s
 
 def _strip_strl(strl):
     for s in strl:
@@ -117,6 +119,9 @@ class NewsLoader(ItemLoader):
                            lambda x: x.split(','),
                           )
     bylines_out = Compose(TakeFirst(), lambda x: x.split(','))
+
+    # Post out any notes we've got.
+    notes_out = Identity()
 
     # TODO: Consider converting these to use a proper RDFa/microdata parser
     #       like rdflib. scrapinghub/extruct looks ideal.

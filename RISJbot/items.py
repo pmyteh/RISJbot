@@ -24,6 +24,7 @@ class NewsItem(scrapy.Item):
     keywords = scrapy.Field()
     rawpagegzipb64 = scrapy.Field()
     previousfetches = scrapy.Field()
+    notes = scrapy.Field()
     # The following are added by pipeline
     wordcount = scrapy.Field()
     sentiment = scrapy.Field()
