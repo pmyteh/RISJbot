@@ -63,6 +63,9 @@ class ReadingAge(object):
         sylls = list(self.to_syl_count(self.split_hyphenated(words)))
         nsylls = sum(sylls)
         nsyllwords = len(sylls)
+        if nsyllwords == 0 or nsent == 0:
+            # No calculations for you.
+            return item
         item['fleschreadingease'] = (206.835 -
                                      1.015 * (nwords / nsent) -
                                      84.6  * (nsylls / nsyllwords))
