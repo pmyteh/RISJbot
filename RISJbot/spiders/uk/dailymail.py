@@ -13,6 +13,12 @@ class DailyMailSpider(NewsRSSFeedSpider):
     # allowed_domains = ['dailymail.co.uk']
     start_urls = ['http://www.dailymail.co.uk/articles.rss']
 
+    def parse_node(self, response, selector):
+        """Override NewsRSSFeedSpider to normalise URLs and remove tracking
+           junk."""
+        for rq in super().parse_node(response, selector):
+            yield rq.replace(url = rq.url.split('?')[0])
+
     # RSSFeedSpider parses the RSS feed and calls parse_page(response) as a
     # callback for each page it finds in the feed.
     def parse_page(self, response):
