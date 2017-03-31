@@ -179,8 +179,8 @@ class NewsLoader(ItemLoader):
         except (ValueError, KeyError):
             self.add_value('bylines',  data.get('author'))
         except Exception as e:
-            logger.warning("Failed to handle byline extraction from {} for "
-                                "{}: {}".format(data, response, e))
+            logger.error("Failed to handle byline extraction from {} for "
+                            "{}: {}".format(data, response, e))
         try:
             self.add_value('source',   data['publisher']['name'])
         except (ValueError, KeyError):
