@@ -42,7 +42,7 @@ ROBOTSTXT_OBEY = True
 from .aws_credentials import *
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
-FEED_URI = 's3://reutersinstitute-risjbot/166147/test/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
+FEED_URI = 's3://reutersinstitute-risjbot/166147/live/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
 FEED_FORMAT = 'jsonlines'
 # FEED_EXPORT_FIELDS = list(NewsItem().fields.keys()) # Critical for CSV
 FEED_STORE_EMPTY = True
