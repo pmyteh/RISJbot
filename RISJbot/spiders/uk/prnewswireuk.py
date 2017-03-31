@@ -21,6 +21,8 @@ class PRNewswireUKSpider(NewsRSSFeedSpider):
         @noscrapes modtime section
         """
 
+
+
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.        
@@ -39,9 +41,9 @@ class PRNewswireUKSpider(NewsRSSFeedSpider):
         # l.add_* calls above this line, or supplement gaps by making them
         # below.
         l.add_fromresponse(response)
-        #l.add_htmlmeta()
-        #l.add_schemaorg(response)
-        #l.add_opengraph()
+        l.add_htmlmeta()
+        l.add_schemaorg(response)
+        l.add_opengraph()
         l.add_scrapymeta(response)
         #l.add_schemaorg_bylines()
         #l.add_dublincore()

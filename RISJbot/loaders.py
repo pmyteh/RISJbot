@@ -269,9 +269,10 @@ class NewsLoader(ItemLoader):
                        'head/meta[@property="article:section"]/@content')
         self.add_xpath('bylines',
                        'head/meta[@property="article:author"]/@content')
+        self.add_xpath('keywords',
+                       'head/meta[@property="article:tag"]/@content')
         # Also:
         # article:expiration_time - When the article is out of date after.
-        # article:tag - string array - Tag words associated with this article.
 
     def add_dublincore(self):
         """Extracts Dublin Core metadata information from the head"""

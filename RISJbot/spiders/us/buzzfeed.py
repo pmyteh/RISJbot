@@ -46,5 +46,7 @@ class BuzzfeedSpider(NewsRSSFeedSpider):
 
         l.add_xpath('bodytext', '//div[@data-print="body"]/*[not(contains(@class, "user-bio") or contains(@class, "_shares") or contains(@class, "inline-promo"))]//text()')
         l.add_xpath('bodytext', '//div[contains(@class, "_item_text")]//text()')
+        l.add_xpath('bodytext', '//article//*[contains(@class, "subbuzz-text") or '
+                                             'contains(@class, "subbuzz__title")]//text()')
 
         return l.load_item()
