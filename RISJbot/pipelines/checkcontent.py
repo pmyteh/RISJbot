@@ -7,6 +7,6 @@ class CheckContent(object):
     def process_item(self, item, spider):
         try:
             item['bodytext']
-        except KeyError
+        except KeyError:
             logger.error("No bodytext: {}".format(item.url))
         return item

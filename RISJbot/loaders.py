@@ -181,7 +181,7 @@ class NewsLoader(ItemLoader):
         self.add_value('section',      data.get('articleSection'))
         try:
             self.add_value('bylines',  data['author']['name'])
-        except (ValueError, KeyError, TypeError):
+        except (ValueError, KeyError):
             self.add_value('bylines',  data.get('author'))
         except Exception as e:
             logger.error("Failed to handle byline extraction from {} for "
