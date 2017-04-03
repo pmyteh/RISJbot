@@ -196,6 +196,7 @@ ITEM_PIPELINES = {
     'RISJbot.pipelines.wordcount.WordCount': 200,
     'RISJbot.pipelines.namedpeople.NamedPeople': 300,
     'RISJbot.pipelines.readingage.ReadingAge': 400,
+    'RISJbot.pipelines.checkcontent.CheckContent': 800,
     'RISJbot.pipelines.striprawpage.StripRawPage': 900,
 }
 
