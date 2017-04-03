@@ -13,6 +13,7 @@ RISJbot/dlmiddlewares/stripnull.py
 RISJbot/extensions/__init__.py
 RISJbot/extensions/dotscrapy.py
 RISJbot/pipelines/__init__.py
+RISJbot/pipelines/checkcontent.py
 RISJbot/pipelines/namedpeople.py
 RISJbot/pipelines/readingage.py
 RISJbot/pipelines/sentiment.py
