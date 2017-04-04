@@ -131,7 +131,7 @@ DOWNLOADER_MIDDLEWARES = {
 STRIPNULL_ENABLED = True
 #STRIPNULL_SPIDERS = ['ap']
 
-# Map all 'edition.cnn.com' URLs to the equivalent 'www.cnn.com' (dedupe)
+# Map all 'www.cnn.com' URLs to the equivalent 'edition.cnn.com' (dedupe)
 # TN, 2017/03/27
 EQUIVALENTDOMAINS_ENABLED = True
 EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
