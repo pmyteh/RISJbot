@@ -57,6 +57,12 @@ class RefetchControl(object):
         self.agelimit = s.getint('REFETCHCONTROL_AGELIMITSECS',
                                  self.refetchsecs * (self.maxfetches + 1))
         self.refetchfromdb = s.getbool('REFETCHCONTROL_REFETCHFROMDB', False)
+        # Keep the DB to a reasonable size by removing stale entries
+        self.trimdb = s.getbook('REFETCHCONTROL_TRIMDB', False)
+        if self.trimdb:
+            self.keysrqd = set()
+        else:
+            self.keysrqd = None
         self.reset = s.getbool('REFETCHCONTROL_RESET', False)
         # Grotty: see _schedule_url()
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
@@ -133,34 +139,51 @@ class RefetchControl(object):
 
         logger.debug("Trawling database for unfetched pages.")
 
+        keystodelete = set()
+
         c = self.dbs[spider.name].cursor()
         # If it's newer than this, we don't want it
         cutofft = (datetime.datetime.utcnow()
                         - datetime.timedelta(seconds=self.refetchsecs))
         cutoffold = (datetime.datetime.utcnow()
                         - datetime.timedelta(seconds=self.agelimit)) 
-        for row in c.execute('SELECT * FROM records WHERE '
-                                'time <= ? AND time > ? AND fetches < ?',
-                             (cutofft, cutoffold, self.maxfetches)):
+#        for row in c.execute('SELECT * FROM records WHERE '
+#                                'time <= ? AND time > ? AND fetches < ?',
+#                             (cutofft, cutoffold, self.maxfetches)):
+        for row in c.execute('SELECT * FROM records'):
             key, url, nf, t = row
-            tdiff = datetime.datetime.utcnow() - t
-            logger.debug("Scheduling refetch from database crawl "
-                         "({} fetches, last at {}, {:.0f} seconds ago, "
-                         "min/max secs {}/{}): {}".format(
-                                 nf,
-                                 t.isoformat(),
-                                 tdiff.total_seconds(),
-                                 self.refetchsecs,
-                                 self.agelimit,
-                                 url,
-                             )
-                        )
-            self._schedule_url(url,
-                               {'refetchcontrol_trawled': True,
-                                'refetchcontrol_key': key,
-                                'refetchcontrol_previous': nf,},
-                               spider)
-            self.stats.inc_value('refetchcontrol/trawled', spider=spider)
+            if self.keysrqd is not None and key in self.keysrqd:
+                # We've fetched this already this crawl. If we're not logging
+                # keys, the cutoff times should stop pages from being refetched
+                continue
+            elif t <= cutofft and t > cutoffold and nf < self.maxfetches:
+                # This is eligible, and hasn't been fetched this crawl
+                tdiff = datetime.datetime.utcnow() - t
+                logger.debug("Scheduling refetch from database crawl "
+                             "({} fetches, last at {}, {:.0f} seconds ago, "
+                             "min/max secs {}/{}): {}".format(
+                                     nf,
+                                     t.isoformat(),
+                                     tdiff.total_seconds(),
+                                     self.refetchsecs,
+                                     self.agelimit,
+                                     url,
+                                 )
+                            )
+                self._schedule_url(url,
+                                   {'refetchcontrol_trawled': True,
+                                    'refetchcontrol_key': key,
+                                    'refetchcontrol_previous': nf,},
+                                   spider)
+                self.stats.inc_value('refetchcontrol/trawled', spider=spider)
+            elif t <= cutoffold:
+                # Not fetched, too old to fetch; delete if flagged
+                if self.trimdb:
+                    keystodelete.update([key])
+        if self.trimdb:
+            for k in keystodelete:
+                c.execute('DELETE FROM records WHERE key = ?', (k,))
+            c.commit()
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
@@ -197,6 +220,9 @@ class RefetchControl(object):
     def _process_request(self, r, spider):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
+
+        if self.keysrqd is not None:
+            self.keysrqd.update([key])
 
         if 'refetchcontrol_pass' in r.meta:
             logger.debug('Passing: {}'.format(r))

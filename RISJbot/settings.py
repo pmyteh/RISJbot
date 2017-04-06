@@ -25,8 +25,12 @@ TEMPLATES_DIR = 'RISJbot/templates'
 
 # Location of downloaded NLTK models etc. Need to set the environment variable
 # so the NLTK libraries can find them.
-NLTKDATA_DIR = data_path('nltk_data', createdir=True)
-os.environ['NLTK_DATA'] = NLTKDATA_DIR
+# NOTE: If this is in .scrapy, ScrapingHub is in use, and .scrapy is being
+#       persisted via S3, this will use a *lot* of data transfer (10s of MB
+#       being shovelled out of S3 for each crawler run) with consequent high
+#       costs.
+#NLTKDATA_DIR = data_path('nltk_data', createdir=True)
+#os.environ['NLTK_DATA'] = NLTKDATA_DIR
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = 'RISJbot (+http://reutersinstitute.politics.ox.ac.uk/)'
@@ -42,7 +46,7 @@ ROBOTSTXT_OBEY = True
 from .aws_credentials import *
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
-FEED_URI = 's3://reutersinstitute-risjbot/166147/live/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
+FEED_URI = 's3://reutersinstitute-risjbot/166147/main/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
 FEED_FORMAT = 'jsonlines'
 # FEED_EXPORT_FIELDS = list(NewsItem().fields.keys()) # Critical for CSV
 FEED_STORE_EMPTY = True
@@ -95,6 +99,7 @@ REFETCHCONTROL_ENABLED = True
 REFETCHCONTROL_MAXFETCHES = 8
 REFETCHCONTROL_REFETCHSECS = 10800
 REFETCHCONTROL_REFETCHFROMDB = True
+REFETCHCONTROL_TRIMDB = True
 REFETCHCONTROL_RQCALLBACK = 'spider.parse_page'
 REFETCHCONTROL_DIR = data_path('RefetchControl', createdir=True)
 
@@ -194,8 +199,9 @@ FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
 ITEM_PIPELINES = {
     'RISJbot.pipelines.sentiment.Sentiment': 100,
     'RISJbot.pipelines.wordcount.WordCount': 200,
-    'RISJbot.pipelines.namedpeople.NamedPeople': 300,
-    'RISJbot.pipelines.readingage.ReadingAge': 400,
+# Removed from pipeline to reduce DotscrapyPersistence S3 usage, TN 2017-04-06
+#    'RISJbot.pipelines.namedpeople.NamedPeople': 300,
+#    'RISJbot.pipelines.readingage.ReadingAge': 400,
     'RISJbot.pipelines.checkcontent.CheckContent': 800,
     'RISJbot.pipelines.striprawpage.StripRawPage': 900,
 }
