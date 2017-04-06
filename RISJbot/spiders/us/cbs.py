@@ -39,5 +39,6 @@ class CbsSpider(NewsSitemapSpider):
         # Media pages. NOTE: These can be multipage; this will only get the
         # first page's text.
         l.add_xpath('bodytext', '//div[contains(@class, "post")]//text()')
+        l.add_xpath('bodytext', '//div[@itemid="#article-entry"]//text()')
 
         return l.load_item()

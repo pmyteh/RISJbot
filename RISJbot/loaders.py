@@ -177,7 +177,11 @@ class NewsLoader(ItemLoader):
         self.add_value('modtime',      data.get('dateModified'))
         self.add_value('keywords',     data.get('keywords'))
         self.add_value('headline',     data.get('headline'))
-        self.add_value('bodytext',     data.get('articleBody'))
+        try:
+            self.add_value('bodytext',     data.get('articleBody'))
+        except Exception as e:
+            logger.warning("Can't extract body from {}: {}".format(response,
+                                                                   e))
         self.add_value('section',      data.get('articleSection'))
         try:
             self.add_value('bylines',  data['author']['name'])
