@@ -193,7 +193,7 @@ class RefetchControl(object):
                                          spider=spider)
             # The database is shortened, and we want to minimize its size
             # because DotscrapyPersistence is used
-            db.cursor().execute('VACUUM')
+            self.dbs[spider.name].execute('VACUUM')
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
