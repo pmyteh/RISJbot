@@ -58,11 +58,9 @@ class RefetchControl(object):
                                  self.refetchsecs * (self.maxfetches + 1))
         self.refetchfromdb = s.getbool('REFETCHCONTROL_REFETCHFROMDB', False)
         # Keep the DB to a reasonable size by removing stale entries
-        self.trimdb = s.getbook('REFETCHCONTROL_TRIMDB', False)
+        self.trimdb = s.getbool('REFETCHCONTROL_TRIMDB', False)
         if self.trimdb:
             self.keysrqd = set()
-        else:
-            self.keysrqd = None
         self.reset = s.getbool('REFETCHCONTROL_RESET', False)
         # Grotty: see _schedule_url()
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
@@ -70,10 +68,13 @@ class RefetchControl(object):
         self.stats = crawler.stats
         self.idletrawled = False
         logger.debug("RefetchControl starting; dir: {}, "
-                     "maxfetches: {}, refetchsecs: {}, reset: {}"
+                     "maxfetches: {}, refetchsecs: {}, agelimitsect: {}, "
+                     "trimdb: {}, reset: {}"
                      "".format(self.dir,
                                self.maxfetches,
                                self.refetchsecs,
+                               self.agelimit,
+                               self.trimdb,
                                self.reset,
                               )
                     )
@@ -119,9 +120,14 @@ class RefetchControl(object):
     def spider_closed(self, spider):
         logger.debug("Closing databases")
         for db in self.dbs.values():
+            if self.trimdb:
+                # The database is shortened, and we want to minimize its size
+                # because DotscrapyPersistence is used
+                db.cursor().execute('VACUUM')
             # Paranoia.
             db.commit()
             db.close()
+        logger.debug("Databases closed")
 
     def spider_idle(self, spider):
         """If an item is fetched once, but then disappears from the feed
@@ -138,6 +144,8 @@ class RefetchControl(object):
             return
 
         logger.debug("Trawling database for unfetched pages.")
+        if self.trimdb:
+            logger.debug("Keys fetched: {}".format(self.keysrqd))
 
         keystodelete = set()
 
@@ -152,12 +160,12 @@ class RefetchControl(object):
 #                             (cutofft, cutoffold, self.maxfetches)):
         for row in c.execute('SELECT * FROM records'):
             key, url, nf, t = row
-            if self.keysrqd is not None and key in self.keysrqd:
-                # We've fetched this already this crawl. If we're not logging
-                # keys, the cutoff times should stop pages from being refetched
-                continue
-            elif t <= cutofft and t > cutoffold and nf < self.maxfetches:
-                # This is eligible, and hasn't been fetched this crawl
+#            logger.debug("key: {}, url: {}, nf: {}, t: {}, (cutofft: {}, "
+#                         "cutoffold: {}, nf: {})".format(key, url, nf, t,
+#                                                         cutofft, cutoffold,
+#                                                         nf))
+            if t <= cutofft and t > cutoffold and nf < self.maxfetches:
+                # This is eligible
                 tdiff = datetime.datetime.utcnow() - t
                 logger.debug("Scheduling refetch from database crawl "
                              "({} fetches, last at {}, {:.0f} seconds ago, "
@@ -176,14 +184,16 @@ class RefetchControl(object):
                                     'refetchcontrol_previous': nf,},
                                    spider)
                 self.stats.inc_value('refetchcontrol/trawled', spider=spider)
-            elif t <= cutoffold:
-                # Not fetched, too old to fetch; delete if flagged
-                if self.trimdb:
-                    keystodelete.update([key])
+            elif t <= cutoffold and self.trimdb and key not in self.keysrqd:
+                # Not fetched, too old to fetch; delete
+                keystodelete.update([key])
         if self.trimdb:
             for k in keystodelete:
+                logger.debug("Deleting: {}".format(k))
                 c.execute('DELETE FROM records WHERE key = ?', (k,))
-            c.commit()
+                self.stats.inc_value('refetchcontrol/dbkeystrimmed',
+                                     spider=spider)
+            self.dbs[spider.name].commit()
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
@@ -221,7 +231,9 @@ class RefetchControl(object):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
 
-        if self.keysrqd is not None:
+        logger.debug("_process_request: {}".format(r))
+
+        if self.trimdb:
             self.keysrqd.update([key])
 
         if 'refetchcontrol_pass' in r.meta:
@@ -284,7 +296,6 @@ class RefetchControl(object):
         r.meta['refetchcontrol_previous'] = nf
         self.stats.inc_value('refetchcontrol/refetched', spider=spider)
         return r
-        
 
     def _process_item(self, item, response, spider):
         # Is Item; update the database with the new number of fetches
@@ -325,7 +336,6 @@ class RefetchControl(object):
         return item
  
     def process_spider_output(self, response, result, spider):
-
         def _filter(r):
             if isinstance(r, Request):
                 return self._process_request(r, spider)
