@@ -13,11 +13,8 @@ class USATodaySpider(NewsSitemapSpider):
     # away from usatoday.com. For consistency, we exclude these.
     allowed_domains = ['usatoday.com']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    # NOTE: This hierarchy of sitemaps is massively duplicative, and the
-    #       dupe filter (or DeltaFetch if it's enabled) will be working
-    #       overtime. It also results in a large number of sitemap fetches on
-    #       each re-crawl. C'est la vie.
-    sitemap_urls = ['http://www.usatoday.com/news_sitemap_index.xml'] 
+
+    sitemap_urls = ['https://www.usatoday.com/news-sitemap.xml'] 
 
     def parse_page(self, response):
         """@url http://www.usatoday.com/story/money/markets/2017/02/28/bonds-telling-less-bullish-tale-than-stocks/98503646/
