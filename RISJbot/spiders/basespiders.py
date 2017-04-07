@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
 from scrapy.spiders import XMLFeedSpider, SitemapSpider
 from scrapy.http import Request
-from scrapy.utils.sitemap import Sitemap, sitemap_urls_from_robots
+from RISJbot.utils import NewsSitemap
+from scrapy.utils.sitemap import sitemap_urls_from_robots#, Sitemap
 from scrapy.spiders.sitemap import iterloc
+
+logger = logging.getLogger(__name__)
 
 class NewsRSSFeedSpider(XMLFeedSpider):
     iterator = 'iternodes' # you can change this; see the docs
@@ -50,6 +54,8 @@ class NewsAtomFeedSpider(XMLFeedSpider):
 
     def parse_page(self, response):
         raise NotImplementedError
+logger = logging.getLogger(__name__)
+
 
 # TODO: Consider extending the NewsSitemapSpider to extract Google News metadata
 #       from the XML sitemap, pass it using meta parameters through the spider
@@ -87,7 +93,7 @@ class NewsSitemapSpider(SitemapSpider):
                                {'response': response}, extra={'spider': self})
                 return
 
-            s = Sitemap(body)
+            s = NewsSitemap(body)
             if s.type == 'sitemapindex':
                 for loc in iterloc(s, self.sitemap_alternate_links):
                     if any(x.search(loc) for x in self._follow):
@@ -106,6 +112,8 @@ class NewsSitemapSpider(SitemapSpider):
     @staticmethod
     def iterurlset(it, alt=False):
         for d in it:
+            logger.debug("{}".format(d))
+
             meta = {'newsmeta': {}}
             nm = meta['newsmeta']
             loc = d['loc']
@@ -122,10 +130,12 @@ class NewsSitemapSpider(SitemapSpider):
             yield (loc, meta)
 
             # Also consider alternate URLs (xhtml:link rel="alternate")
-            if alt and 'alternate' in d:
-                for l in d['alternate']:
-                    yield (l, meta)
-                                                    
+            # NOTE: different interface than scrapy.spiders.SitemapSpider;
+            #       depends (like the newsmeta code) on NewsSitemap.
+            if alt:
+                for url in d:
+                    if d.startswith('alternate'):
+                        yield (url, meta)                                                    
 
 
 # Following is from scrapy.spiders.sitemap. It's a bit grotty, and the Sitemap

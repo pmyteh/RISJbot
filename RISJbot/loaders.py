@@ -330,8 +330,6 @@ class NewsLoader(ItemLoader):
            is normally metadata from the RSS feed which linked to the article,
            and may in the future also be from Google News sitemaps."""
         for k in response.meta.get('newsmeta'):
-            logger.debug("Meta - {}: {}".format(k,
-                                                response.meta['newsmeta'][k]))
             self.add_value(k, response.meta['newsmeta'][k])
 
         self.add_value('previousfetches',

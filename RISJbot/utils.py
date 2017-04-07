@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import logging
+import lxml.etree
 
 logger = logging.getLogger(__name__)
 
@@ -28,23 +29,73 @@ def split_multiple_byline_string(s):
             else:
                 yield tok
 
-import scrapy_dotpersistence
-import os
-from scrapy.exceptions import NotConfigured
+class NewsSitemap(object):
+    """Class to parse Sitemap (type=urlset) and Sitemap Index
+    (type=sitemapindex) files. Adapted from scrapy.utils.sitemap."""
+
+    def __init__(self, xmltext):
+        xmlp = lxml.etree.XMLParser(recover=True,
+                                    remove_comments=True,
+                                    resolve_entities=False)
+        self._root = lxml.etree.fromstring(xmltext, parser=xmlp)
+        rt = self._root.tag
+        self.type = self._root.tag.split('}', 1)[1] if '}' in rt else rt
+
+    def __iter__(self):
+        for elem in self._root.getchildren():
+            d = self.recursive_dict(elem)[1]
+
+#            d = {}
+#            for el in elem.getchildren():
+#                tag = el.tag
+#                name = tag.split('}', 1)[1] if '}' in tag else tag
+#
+#                if name == 'link':
+#                    if 'href' in el.attrib:
+#                        d.setdefault('alternate', []).append(el.get('href'))
+#                else:
+#                    d[name] = el.text.strip() if el.text else ''
+
+            if 'loc' in d:
+                yield d
+
+    def recursive_dict(self, element):
+        # Note: eliminates namespaces, like the original Sitemap
+        tag = element.tag
+        name = tag.split('}', 1)[1] if '}' in tag else tag
+
+        txt = None
+        if element.text:
+            txt = element.text.strip()
+
+        # Slightly less flexible than the standard implementation, in that
+        # multiple alternates with the same language code (or None) will
+        # clobber each other. Also needs support in the parsing code (different
+        # interface).
+        if name == 'link':
+             if 'href' in element.attrib:
+                 return 'alternate{}'.format(element.get('hreflang')), \
+                    element.get('href')
+        return name, dict(map(self.recursive_dict, element)) or txt
+
+
+#import scrapy_dotpersistence
+#import os
+#from scrapy.exceptions import NotConfigured
 # XXX This is all grot.
-class _risj_dotscrapy_indirect(object):
-    @classmethod
-    def from_crawler(cls, crawler):
-        settings = crawler.settings
-        os.environ["SCRAPY_PROJECT_ID"] = "persistence"
-        os.environ["SCRAPY_SPIDER"] = "all-spiders"
-        enabled = (settings.getbool('DOTSCRAPY_ENABLED') or
-                   settings.get('DOTSCRAPYPERSISTENCE_ENABLED'))
-        if not enabled:
-            raise NotConfigured
-        bucket = settings.get('ADDONS_S3_BUCKET')
-        logger.debug('returning DotScrapyPersistence object')
-        return scrapy_dotpersistence.DotScrapyPersistence(crawler, bucket)
+#class _risj_dotscrapy_indirect(object):
+#    @classmethod
+#    def from_crawler(cls, crawler):
+#        settings = crawler.settings
+#        os.environ["SCRAPY_PROJECT_ID"] = "persistence"
+#        os.environ["SCRAPY_SPIDER"] = "all-spiders"
+#        enabled = (settings.getbool('DOTSCRAPY_ENABLED') or
+#                   settings.get('DOTSCRAPYPERSISTENCE_ENABLED'))
+#        if not enabled:
+#            raise NotConfigured
+#        bucket = settings.get('ADDONS_S3_BUCKET')
+#        logger.debug('returning DotScrapyPersistence object')
+#        return scrapy_dotpersistence.DotScrapyPersistence(crawler, bucket)
 
 #class SelectorXSLTTransformer(object):
 #    def __init__(self, selector):
