@@ -184,10 +184,11 @@ class RefetchControl(object):
                 # Not fetched, too old to fetch; delete
                 keystodelete.update([key])
         if self.trimdb:
-            with self.dbs[spider.name].transaction() as tx:
+            with self.dbs[spider.name]:
                 for k in keystodelete:
                     logger.debug("Deleting: {}".format(k))
-                    tx.execute('DELETE FROM records WHERE key = ?', (k,))
+                    query = 'DELETE FROM records WHERE key = ?'
+                    self.dbs[spider.name].execute(query, (k,))
                     self.stats.inc_value('refetchcontrol/dbkeystrimmed',
                                          spider=spider)
             # The database is shortened, and we want to minimize its size
