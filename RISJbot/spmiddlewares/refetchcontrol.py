@@ -51,11 +51,10 @@ class RefetchControl(object):
         self.dir = s.get('REFETCHCONTROL_DIR', os.getcwd())
         self.maxfetches = s.getint('REFETCHCONTROL_MAXFETCHES', 1)
         self.refetchsecs = s.getint('REFETCHCONTROL_REFETCHSECS', 0)
-        # If it's older than this, we don't want it - probably repeated
-        # fetch failures. This allows one refetchsecs period of accumulated
-        # slack. 
+        # If it's not been fetched in this time, we don't want it - probably
+        # repeated fetch failures.
         self.agelimit = s.getint('REFETCHCONTROL_AGELIMITSECS',
-                                 self.refetchsecs * (self.maxfetches + 1))
+                                 self.refetchsecs * self.maxfetches)
         self.refetchfromdb = s.getbool('REFETCHCONTROL_REFETCHFROMDB', False)
         # Keep the DB to a reasonable size by removing stale entries
         self.trimdb = s.getbool('REFETCHCONTROL_TRIMDB', False)
@@ -144,8 +143,8 @@ class RefetchControl(object):
             return
 
         logger.debug("Trawling database for unfetched pages.")
-        if self.trimdb:
-            logger.debug("Keys fetched: {}".format(self.keysrqd))
+#        if self.trimdb:
+#            logger.debug("Keys fetched: {}".format(self.keysrqd))
 
         keystodelete = set()
 
