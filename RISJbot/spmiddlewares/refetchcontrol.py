@@ -119,12 +119,12 @@ class RefetchControl(object):
     def spider_closed(self, spider):
         logger.debug("Closing databases")
         for db in self.dbs.values():
+            # Paranoia.
+            db.commit()
             if self.trimdb:
                 # The database is shortened, and we want to minimize its size
                 # because DotscrapyPersistence is used
                 db.cursor().execute('VACUUM')
-            # Paranoia.
-            db.commit()
             db.close()
         logger.debug("Databases closed")
 
@@ -189,10 +189,11 @@ class RefetchControl(object):
         if self.trimdb:
             for k in keystodelete:
                 logger.debug("Deleting: {}".format(k))
-                c.execute('DELETE FROM records WHERE key = ?', (k,))
+                with self.dbs[spider.name].transaction() as tx:
+                    tx.execute('DELETE FROM records WHERE key = ?', (k,))
                 self.stats.inc_value('refetchcontrol/dbkeystrimmed',
                                      spider=spider)
-            self.dbs[spider.name].commit()
+#            self.dbs[spider.name].commit()
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
