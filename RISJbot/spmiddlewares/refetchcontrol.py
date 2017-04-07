@@ -139,7 +139,7 @@ class RefetchControl(object):
         if self.idletrawled or not self.refetchfromdb:
             return
 
-        logger.debug("Trawling database for unfetched pages.")
+        logger.info("Trawling database for unfetched pages.")
 #        if self.trimdb:
 #            logger.debug("Keys fetched: {}".format(self.keysrqd))
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from scrapy.spiders import XMLFeedSpider, SitemapSpider
 from scrapy.http import Request
-#from scrapy.utils.sitemap import Sitemap, sitemap_urls_from_robots
-#from scrapy.spiders.sitemap import iterloc
+from scrapy.utils.sitemap import Sitemap, sitemap_urls_from_robots
+from scrapy.spiders.sitemap import iterloc
 
 class NewsRSSFeedSpider(XMLFeedSpider):
     iterator = 'iternodes' # you can change this; see the docs
@@ -74,13 +74,11 @@ class NewsSitemapSpider(SitemapSpider):
     def parse_page(self, response):
         raise NotImplementedError
 
-
-# Following is from scrapy.spiders.sitemap. It's a bit grotty, and the Sitemap
-# module doesn't seem optimised to do anything other than extract URLs.
-"""
     def _parse_sitemap(self, response):
+        """This is adapted from scrapy.spiders.sitemap"""
         if response.url.endswith('/robots.txt'):
-            for url in sitemap_urls_from_robots(response.text, base_url=response.url):
+            for url in sitemap_urls_from_robots(response.text,
+                                                base_url=response.url):
                 yield Request(url, callback=self._parse_sitemap)
         else:
             body = self._get_sitemap_body(response)
@@ -95,11 +93,45 @@ class NewsSitemapSpider(SitemapSpider):
                     if any(x.search(loc) for x in self._follow):
                         yield Request(loc, callback=self._parse_sitemap)
             elif s.type == 'urlset':
-                for loc in iterloc(s):
+                for loc, meta in self.iterurlset(s):
                     for r, c in self._cbs:
                         if r.search(loc):
-                            yield Request(loc, callback=c)
-                            break
+                            try:
+                                yield Request(loc, callback=c, meta=meta)
+                                break
+                            except Exception as e:
+                                self.logger.error("Failed to queue {}: {}".format(
+                                                    loc, e))
+
+    @staticmethod
+    def iterurlset(it, alt=False):
+        for d in it:
+            meta = {'newsmeta': {}}
+            nm = meta['newsmeta']
+            loc = d['loc']
+            if 'lastmod' in d:
+                nm['modtime'] = d['lastmod'].strip()
+            if 'news:news' in d:
+                for k, v in d['news:news'].items():
+                    if k == 'news:keywords':
+                        nm['keywords'] = v.strip()
+                    elif k == 'news:publication_date':
+                        nm['firstpubtime'] = v.strip()
+                    elif k == 'news:title':
+                        nm['headline'] = v.strip()
+            yield (loc, meta)
+
+            # Also consider alternate URLs (xhtml:link rel="alternate")
+            if alt and 'alternate' in d:
+                for l in d['alternate']:
+                    yield (l, meta)
+                                                    
+
+
+# Following is from scrapy.spiders.sitemap. It's a bit grotty, and the Sitemap
+# module doesn't seem optimised to do anything other than extract URLs.
+"""
+
 
 def iterloc(it, alt=False):
     for d in it:

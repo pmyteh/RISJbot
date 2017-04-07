@@ -7,7 +7,7 @@ from scrapy.loader.processors import Join, Compose, MapCompose
 class GuardianSpider(NewsSitemapSpider):
     name = "guardian"
     # allowed_domains = ["guardian.com"]
-    sitemap_urls = ['https://www.theguardian.com/robots.txt']
+    sitemap_urls = ['https://www.theguardian.com/sitemaps/news.xml']
 
     def parse_page(self, response):
         """@url https://www.theguardian.com/business/2017/feb/20/how-unilever-foiled-kraft-heinzs-115m-takeover-bid-warren-buffett
@@ -39,7 +39,7 @@ class GuardianSpider(NewsSitemapSpider):
         # TODO: The <span class="drop-cap"> setup leaves a spurious line break
         #       after the first letter, which results in a space in the output
         #       text.
-        l.add_xpath('bodytext', '//article//div[contains(@class, "content__main-column")]//*[not(contains(@class, "meta"))]//text()') # Eyewitness, plus video?
+        l.add_xpath('bodytext', '//article//div[contains(@class, "content__main-column")]/*[not(contains(@class, "meta"))]//text()') # Eyewitness, plus video?
 
 #        l.add_xpath('bodytext', '//div[@data-component="body"]//*[not(contains(@class, "meta"))]//text()') # Video
 #        l.add_xpath('bodytext', '//div[@id="mainCol"]//text()') # Australian poll briefing
