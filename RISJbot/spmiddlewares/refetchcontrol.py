@@ -104,6 +104,7 @@ class RefetchControl(object):
         detect_types = sqlite3.PARSE_DECLTYPES # |sqlite3.PARSE_COLNAMES
         self.dbs[spider.name] = sqlite3.connect(dbpath,
                                                 detect_types=detect_types)
+        self.dbs[spider.name].isolation_level = None
 
         if new or self.reset or getattr(spider, 'refetchcontrol_reset', False):
             logger.debug("Resetting RefetchControl database.")
@@ -121,10 +122,6 @@ class RefetchControl(object):
         for db in self.dbs.values():
             # Paranoia.
             db.commit()
-            if self.trimdb:
-                # The database is shortened, and we want to minimize its size
-                # because DotscrapyPersistence is used
-                db.cursor().execute('VACUUM')
             db.close()
         logger.debug("Databases closed")
 
@@ -187,20 +184,22 @@ class RefetchControl(object):
                 # Not fetched, too old to fetch; delete
                 keystodelete.update([key])
         if self.trimdb:
-            for k in keystodelete:
-                logger.debug("Deleting: {}".format(k))
-                with self.dbs[spider.name].transaction() as tx:
+            with self.dbs[spider.name].transaction() as tx:
+                for k in keystodelete:
+                    logger.debug("Deleting: {}".format(k))
                     tx.execute('DELETE FROM records WHERE key = ?', (k,))
-                self.stats.inc_value('refetchcontrol/dbkeystrimmed',
-                                     spider=spider)
-#            self.dbs[spider.name].commit()
+                    self.stats.inc_value('refetchcontrol/dbkeystrimmed',
+                                         spider=spider)
+            # The database is shortened, and we want to minimize its size
+            # because DotscrapyPersistence is used
+            db.cursor().execute('VACUUM')
         self.idletrawled = True
         logger.debug("Trawl finished.")
 
 
     def _schedule_url(self, url, meta, spider):
         # This is slightly problematic (but unavaoidable).
-        # engine.crawl() is not a published interface, and is not
+        # engine.crawl() is not a published interface, and is nocannot VACUUM from within a transactiont
         # to be considered stable per the devs, though there is a
         # good deal of published code that uses it to schedule URLs
         # like this in the absence of an official alternative.
@@ -230,8 +229,6 @@ class RefetchControl(object):
     def _process_request(self, r, spider):
         # Is Request; check if a fetch is allowed.
         key = self._get_key(r)
-
-        logger.debug("_process_request: {}".format(r))
 
         if self.trimdb:
             self.keysrqd.update([key])
