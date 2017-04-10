@@ -2,7 +2,7 @@
 import logging
 from scrapy.spiders import XMLFeedSpider, SitemapSpider
 from scrapy.http import Request
-from RISJbot.utils import NewsSitemap
+from RISJbot.utils import NewsSitemap, etree_to_recursive_dict
 from scrapy.utils.sitemap import sitemap_urls_from_robots#, Sitemap
 from scrapy.spiders.sitemap import iterloc
 
@@ -13,29 +13,11 @@ class NewsRSSFeedSpider(XMLFeedSpider):
     itertag = 'item' # change it accordingly
 
     def parse_node(self, response, selector):
-        meta = {'newsmeta': {}}
-        nm = meta['newsmeta']
-
-        # Extract (some) non-url parts of each sitemap node and pass in meta
-        # tag
-        title = selector.xpath('title/text()').extract_first()
-        if title:
-            nm['title'] = title.strip()
-
-        description = selector.xpath('description/text()').extract_first()
-        if description:
-            nm['summary'] = description.strip()
-
-        section = selector.xpath('category/text()').extract_first()
-        if section:
-            nm['section'] = section.strip()
-
-        pubdate = selector.xpath('pubDate/text()').extract_first()
-        if pubdate:
-            nm['firstpubtime'] = pubdate.strip() # TODO: Maybe should be modtime?
-
+        nf = etree_to_recursive_dict(selector.root)[1]
+        meta = {'RSSFeed': nf}
         # Extract URL and submit Request for crawling
         url = selector.xpath('link/text()').extract_first()
+#        self.logger.debug('Meta: {}'.format(meta))
         if url:
             yield Request(url.strip(), callback=self.parse_page, meta=meta)
         else:
@@ -54,7 +36,6 @@ class NewsAtomFeedSpider(XMLFeedSpider):
 
     def parse_page(self, response):
         raise NotImplementedError
-logger = logging.getLogger(__name__)
 
 
 # TODO: Consider extending the NewsSitemapSpider to extract Google News metadata
@@ -114,41 +95,29 @@ class NewsSitemapSpider(SitemapSpider):
         for d in it:
             logger.debug("{}".format(d))
 
-            meta = {'newsmeta': {}}
-            nm = meta['newsmeta']
+            meta = {'NewsSitemap': d}
+    #            meta = {'newsmeta': {}}
+    #            nm = meta['newsmeta']
+
             loc = d['loc']
-            if 'lastmod' in d:
-                nm['modtime'] = d['lastmod'].strip()
-            if 'news' in d:
-                for k, v in d['news'].items():
-                    if k == 'keywords':
-                        nm['keywords'] = v.strip()
-                    elif k == 'publication_date':
-                        nm['firstpubtime'] = v.strip()
-                    elif k == 'title':
-                        nm['headline'] = v.strip()
+
+    #            if 'lastmod' in d:
+    #                nm['modtime'] = d['lastmod'].strip()
+    #            if 'news' in d:
+    #                for k, v in d['news'].items():
+    #                    if k == 'keywords':
+    #                        nm['keywords'] = v.strip()
+    #                    elif k == 'publication_date':
+    #                        nm['firstpubtime'] = v.strip()
+    #                    elif k == 'title':
+    #                        nm['headline'] = v.strip()
             yield (loc, meta)
 
             # Also consider alternate URLs (xhtml:link rel="alternate")
             # NOTE: different interface than scrapy.spiders.SitemapSpider;
             #       depends (like the newsmeta code) on NewsSitemap.
             if alt:
-                for url in d:
-                    if d.startswith('alternate'):
-                        yield (url, meta)                                                    
+                for k, v in d.items():
+                    if k.startswith('alternate'):
+                        yield (v, meta)
 
-
-# Following is from scrapy.spiders.sitemap. It's a bit grotty, and the Sitemap
-# module doesn't seem optimised to do anything other than extract URLs.
-"""
-
-
-def iterloc(it, alt=False):
-    for d in it:
-        yield d['loc']
-
-        # Also consider alternate URLs (xhtml:link rel="alternate")
-        if alt and 'alternate' in d:
-            for l in d['alternate']:
-                yield l
-"""

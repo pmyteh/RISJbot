@@ -43,7 +43,7 @@ class NewsSitemap(object):
 
     def __iter__(self):
         for elem in self._root.getchildren():
-            d = self.recursive_dict(elem)[1]
+            d = etree_to_recursive_dict(elem)[1]
 
 #            d = {}
 #            for el in elem.getchildren():
@@ -59,24 +59,24 @@ class NewsSitemap(object):
             if 'loc' in d:
                 yield d
 
-    def recursive_dict(self, element):
-        # Note: eliminates namespaces, like the original Sitemap
-        tag = element.tag
-        name = tag.split('}', 1)[1] if '}' in tag else tag
+def etree_to_recursive_dict(element):
+    # Note: eliminates namespaces, like the original Sitemap
+    tag = element.tag
+    name = tag.split('}', 1)[1] if '}' in tag else tag
 
-        txt = None
-        if element.text:
-            txt = element.text.strip()
+    txt = None
+    if element.text:
+        txt = element.text.strip()
 
-        # Slightly less flexible than the standard implementation, in that
-        # multiple alternates with the same language code (or None) will
-        # clobber each other. Also needs support in the parsing code (different
-        # interface).
-        if name == 'link':
-             if 'href' in element.attrib:
-                 return 'alternate{}'.format(element.get('hreflang')), \
-                    element.get('href')
-        return name, dict(map(self.recursive_dict, element)) or txt
+    # Slightly less flexible than the standard implementation, in that
+    # multiple alternates with the same language code (or None) will
+    # clobber each other. Also needs support in the parsing code (different
+    # interface).
+    if name == 'link':
+         if 'href' in element.attrib:
+             return 'alternate{}'.format(element.get('hreflang')), \
+                element.get('href')
+    return name, dict(map(etree_to_recursive_dict, element)) or txt
 
 
 #import scrapy_dotpersistence

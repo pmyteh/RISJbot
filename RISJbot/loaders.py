@@ -328,18 +328,40 @@ class NewsLoader(ItemLoader):
     def add_scrapymeta(self, response):
         """Extracts the content passed through meta tags from the Request. This
            is normally metadata from the RSS feed which linked to the article,
-           and may in the future also be from Google News sitemaps."""
+           or from Google News sitemaps."""
 
 
         if 'newsmeta' in response.meta:
             for k in response.meta.get('newsmeta'):
                 self.add_value(k, response.meta['newsmeta'][k])
 
+        if 'RSSFeed' in response.meta:
+            d = response.meta['RSSFeed']
+            self.add_value('headline',     d.get('title'))
+            self.add_value('summary',      d.get('description'))
+            self.add_value('section',      d.get('section'))
+            self.add_value('firstpubtime', d.get('pubDate'))
+            # Extract (some) non-url parts of each sitemap node and pass in meta
+            # tag
+#            title = selector.xpath('title/text()').extract_first()
+#            if title:
+#                nm['headline'] = title.strip()
+#
+#            description = selector.xpath('description/text()').extract_first()
+#            if description:
+#                nm['summary'] = description.strip()
+#
+#            section = selector.xpath('category/text()').extract_first()
+#            if section:
+#                nm['section'] = section.strip()
+#
+#            pubdate = selector.xpath('pubDate/text()').extract_first()
+#            if pubdate:
+#                nm['firstpubtime'] = pubdate.strip() # TODO: Maybe should be modtime?
+
         if 'NewsSitemap' in response.meta:
             d = response.meta['NewsSitemap']
             self.add_value('modtime', d.get('lastmod'))
-#            if 'lastmod' in d:
-#                self.add_value(nm['modtime'] = d['lastmod'].strip()
             if 'news' in d:
                 self.add_value('keywords',
                                d['news'].get('keywords'))
@@ -347,6 +369,8 @@ class NewsLoader(ItemLoader):
                                d['news'].get('publication_date'))
                 self.add_value('headline',
                                d['news'].get('title'))
+#            if 'lastmod' in d:
+#                self.add_value(nm['modtime'] = d['lastmod'].strip()
 #            if 'news' in d:
 #                for k, v in d['news'].items():
 #                    if k == 'keywords':
@@ -355,7 +379,6 @@ class NewsLoader(ItemLoader):
 #                        nm['firstpubtime'] = v.strip()
 #                    elif k == 'title':
 #                        nm['headline'] = v.strip()
-
 
         # Record no of previous fetches
         if 'refetchcontrol_previous' in response.meta:
