@@ -93,7 +93,7 @@ class NewsSitemapSpider(SitemapSpider):
     @staticmethod
     def iterurlset(it, alt=False):
         for d in it:
-            logger.debug("{}".format(d))
+    #        logger.debug("{}".format(d))
 
             meta = {'NewsSitemap': d}
     #            meta = {'newsmeta': {}}
