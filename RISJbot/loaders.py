@@ -329,9 +329,33 @@ class NewsLoader(ItemLoader):
         """Extracts the content passed through meta tags from the Request. This
            is normally metadata from the RSS feed which linked to the article,
            and may in the future also be from Google News sitemaps."""
+
+
         if 'newsmeta' in response.meta:
             for k in response.meta.get('newsmeta'):
                 self.add_value(k, response.meta['newsmeta'][k])
+
+        if 'NewsSitemap' in response.meta:
+            d = response.meta['NewsSitemap']
+            self.add_value('modtime', d.get('lastmod'))
+#            if 'lastmod' in d:
+#                self.add_value(nm['modtime'] = d['lastmod'].strip()
+            if 'news' in d:
+                self.add_value('keywords',
+                               d['news'].get('keywords'))
+                self.add_value('firstpubtime',
+                               d['news'].get('publication_date'))
+                self.add_value('headline',
+                               d['news'].get('title'))
+#            if 'news' in d:
+#                for k, v in d['news'].items():
+#                    if k == 'keywords':
+#                        nm['keywords'] = v.strip()
+#                    elif k == 'publication_date':
+#                        nm['firstpubtime'] = v.strip()
+#                    elif k == 'title':
+#                        nm['headline'] = v.strip()
+
 
         # Record no of previous fetches
         if 'refetchcontrol_previous' in response.meta:
