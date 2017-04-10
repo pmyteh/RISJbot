@@ -78,6 +78,8 @@ class APSpider(CrawlSpider):
         #l.add_schemaorg_bylines()
         #l.add_dublincore()
 
+        l.add_xpath('headline', 'head/title/text()')
+        l.add_xpath('summary', 'head/meta[@name="description"]/@content')
         l.add_xpath('bylines', '//div[@id="byline"]//a/text()')
         l.add_xpath('bodytext', '//div[contains(@class, "field-name-body")]//text()')
         l.add_xpath('modtime', '//div[@id="dateline"]/span[contains(@class, "updated")]/@title')
