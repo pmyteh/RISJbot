@@ -119,13 +119,13 @@ class NewsSitemapSpider(SitemapSpider):
             loc = d['loc']
             if 'lastmod' in d:
                 nm['modtime'] = d['lastmod'].strip()
-            if 'news:news' in d:
-                for k, v in d['news:news'].items():
-                    if k == 'news:keywords':
+            if 'news' in d:
+                for k, v in d['news'].items():
+                    if k == 'keywords':
                         nm['keywords'] = v.strip()
-                    elif k == 'news:publication_date':
+                    elif k == 'publication_date':
                         nm['firstpubtime'] = v.strip()
-                    elif k == 'news:title':
+                    elif k == 'title':
                         nm['headline'] = v.strip()
             yield (loc, meta)
 
