@@ -24,8 +24,14 @@ class IndependentSpider(NewsSitemapSpider):
         # Remove any content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.
 
-        # Picture galleries, often unrelated to the story
+        # Picture galleries, generally unrelated to the story
         mutate_selector_del(s, 'css', '.type-gallery')
+        # "More about" grot
+        mutate_selector_del(s,
+                            'xpath',
+                            '//li[contains(text(), "More about")]/'
+                                'parent::*[contains(@class, '
+                                '"inline-pipes-list")]')
 
         l = NewsLoader(selector=s)
 
