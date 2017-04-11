@@ -2,7 +2,7 @@
 from RISJbot.spiders.basespiders import NewsSitemapSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
-from RISJbot.utils import mutate_selector_del_xpath
+from RISJbot.utils import mutate_selector_del
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 import re
@@ -23,6 +23,19 @@ class ReutersSpider(NewsSitemapSpider):
     # allowed_domains = ['uk.reuters.com']
     # NOTE: This is a full sitemap, not the usual Google News feed. We use
     #       sitemap_follow to restrict this only to the last few days
+    # FIXME: These don't seem to be published until quite early the following
+    #        morning, in a batch. Perhaps move to RSS feeds? (Multiple, at
+    #        http://uk.reuters.com/tools/rss). Note that these spray URLs which
+    #        are (1) not unique for a given article - different URLs accessing
+    #        via different feeds; (2) not the same at arrival as at
+    #        dispatch (301 redirect); (3) not the same as the sitemap URLs.
+    #        This will mean that RefetchControl will reget everything and
+    #        massive numbers of duplicates will be got unless some kind of URL
+    #        normalisation is done in self.parse_node:
+    # http://feeds.reuters.com/~r/Reuters/UKTopNews/~3/GmNrSI5n5QE/uk-tesco-results-idUKKBN17D1GO
+    # -> http://uk.reuters.com/articles/uk-tesco-results-idUKKBN17D1GO
+    #        ... and probably also force-set meta['refetchcontrol_key'] to a
+    #        hash of the normalised URL alone.
     sitemap_urls = ['http://uk.reuters.com/sitemap_index.xml']
     sitemap_follow = [gen_reuters_recent_regex(1)]
 
@@ -35,7 +48,7 @@ class ReutersSpider(NewsSitemapSpider):
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.        
-        mutate_selector_del_xpath(s, '//div[contains(@class, "related-content")]')
+        mutate_selector_del(s, 'css', 'div.related-content')
 
         l = NewsLoader(selector=s)
 
@@ -53,7 +66,12 @@ class ReutersSpider(NewsSitemapSpider):
         #l.add_schemaorg_bylines()
         #l.add_dublincore()
 
-        l.add_xpath('bodytext', '//span[@id="article-text"]/*[not(@class="author")]//text()') 
-        l.add_xpath('summary',  '//meta[@name="description"]/@content')
+        l.add_xpath('bodytext',
+                    '//span[@id="article-text"]/'
+                        '*[not(@class="author")]//text()')
+        l.add_xpath('summary',
+                    '//meta[@name="description"]/@content')
+
+        l.add_value('notes', 'fetchtime delayed by slow feed')
 
         return l.load_item()
