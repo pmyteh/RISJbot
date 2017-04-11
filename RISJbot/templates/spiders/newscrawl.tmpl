@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
-from RISJbot.utils import mutate_selector_del_xpath
+from RISJbot.utils import mutate_selector_del
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.loader.processors import Identity, TakeFirst
@@ -27,8 +27,11 @@ class $classname(CrawlSpider):
         """
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
-        # There aren't native scrapy loader/selector methods for this.        
-        #mutate_selector_del_xpath(s, '//*[contains(@class, "classname")]')
+        # There aren't native scrapy loader/selector methods for this.
+        # CSS is better for operating on classes than XPath, otherwise
+        # either will do.        
+        #mutate_selector_del(s, 'xpath' '//*[@id='someid']')
+        #mutate_selector_del(s, 'css', '.classname')
 
         l = NewsLoader(selector=s)
 

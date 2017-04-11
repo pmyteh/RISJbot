@@ -5,7 +5,7 @@ import lxml.etree
 
 logger = logging.getLogger(__name__)
 
-def mutate_selector_del_xpath(selector, xpath_str):
+def mutate_selector_del(selector, method, expression):
     """Under the covers, Selectors contain an lxml.etree.Element document
        root, which is not exposed by the Selector interface. This is mutatable
        using the .remove method on parts of the selector.root document tree.
@@ -16,10 +16,28 @@ def mutate_selector_del_xpath(selector, xpath_str):
        scrapy could change its selector implementation to use a different
        HTML/XML parsing library, at which point this would fail.
     """
-    for node in selector.root.xpath(xpath_str):
-        node.getparent().remove(node)
+    if method = 'xpath':
+        f = selector.root.xpath
+    elif method = 'css':
+        f = selector.root.css
+    else:
+        raise NotImplementedError
 
+    for node in f(expression):
+        try:
+           node.getparent().remove(node)
+        except Exception as e:
+            logger.error('mutate_selector_del({}, {}, {},) failed: {}'.format(
+                            selector,
+                            method,
+                            expression,
+                            e)
 
+def mutate_selector_del_xpath(selector, xpath_str):
+    mutate_selector_del(selector, 'xpath', xpath_str)
+ 
+def mutate_selector_del_css(selector, css_str):
+    mutate_selector_del(selector, 'css', css_str)
     
 def split_multiple_byline_string(s):
     for y in s.split(' and '):
