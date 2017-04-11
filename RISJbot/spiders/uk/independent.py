@@ -2,7 +2,7 @@
 from RISJbot.spiders.basespiders import NewsSitemapSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
-from RISJbot.utils import mutate_selector_del_xpath
+from RISJbot.utils import mutate_selector_del
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
@@ -22,8 +22,10 @@ class IndependentSpider(NewsSitemapSpider):
         """
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
-        # There aren't native scrapy loader/selector methods for this.        
-        #mutate_selector_del_xpath(s, '//*[@style="display:none"]')
+        # There aren't native scrapy loader/selector methods for this.
+
+        # Picture galleries, often unrelated to the story
+        mutate_selector_del(s, 'css', '.type-gallery')
 
         l = NewsLoader(selector=s)
 
