@@ -36,4 +36,6 @@ class MirrorSpider(NewsSitemapSpider):
         l.add_opengraph()
         l.add_scrapymeta(response)
 
+        l.add_css('bodytext', '.article-body ::text') # Live
+
         return l.load_item()
