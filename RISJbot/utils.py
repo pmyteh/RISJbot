@@ -16,9 +16,9 @@ def mutate_selector_del(selector, method, expression):
        scrapy could change its selector implementation to use a different
        HTML/XML parsing library, at which point this would fail.
     """
-    if method = 'xpath':
+    if method == 'xpath':
         f = selector.root.xpath
-    elif method = 'css':
+    elif method == 'css':
         f = selector.root.css
     else:
         raise NotImplementedError
@@ -31,7 +31,7 @@ def mutate_selector_del(selector, method, expression):
                             selector,
                             method,
                             expression,
-                            e)
+                            e))
 
 def mutate_selector_del_xpath(selector, xpath_str):
     mutate_selector_del(selector, 'xpath', xpath_str)
