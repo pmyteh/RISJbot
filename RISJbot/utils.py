@@ -2,6 +2,7 @@
 import re
 import logging
 import lxml.etree
+from cssselect import HTMLTranslator
 
 logger = logging.getLogger(__name__)
 
@@ -16,22 +17,22 @@ def mutate_selector_del(selector, method, expression):
        scrapy could change its selector implementation to use a different
        HTML/XML parsing library, at which point this would fail.
     """
-    if method == 'xpath':
-        f = selector.root.xpath
-    elif method == 'css':
-        f = selector.root.css
-    else:
-        raise NotImplementedError
+    try:
+        if method == 'xpath':
+            s = expression
+        elif method == 'css':
+            s = HTMLTranslator().css_to_xpath(expression)
+        else:
+            raise NotImplementedError
 
-    for node in f(expression):
-        try:
+        for node in selector.root.xpath(s):
            node.getparent().remove(node)
-        except Exception as e:
-            logger.error('mutate_selector_del({}, {}, {},) failed: {}'.format(
-                            selector,
-                            method,
-                            expression,
-                            e))
+    except Exception as e:
+        logger.error('mutate_selector_del({}, {}, {},) failed: {}'.format(
+                        selector,
+                        method,
+                        expression,
+                        e))
 
 def mutate_selector_del_xpath(selector, xpath_str):
     mutate_selector_del(selector, 'xpath', xpath_str)
