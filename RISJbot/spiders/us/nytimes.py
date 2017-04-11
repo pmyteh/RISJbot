@@ -2,7 +2,7 @@
 from RISJbot.spiders.basespiders import NewsSitemapSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
-from RISJbot.utils import mutate_selector_del_xpath
+from RISJbot.utils import mutate_selector_del
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 from scrapy.utils.gz import gunzip, is_gzipped
@@ -22,9 +22,10 @@ class NYTimesSpider(NewsSitemapSpider):
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.        
-        mutate_selector_del_xpath(s, '//footer[contains(@class, "story-footer")]')
-        mutate_selector_del_xpath(s, '//*[contains(@class, "nocontent")]')
-        mutate_selector_del_xpath(s, '//*[contains(@class, "visually-hidden")]')
+        mutate_selector_del(s, 'xpath', '//footer[contains(@class, "story-footer")]')
+        mutate_selector_del(s, 'css', '.nocontent')
+        mutate_selector_del(s, 'css', '.visually-hidden')
+        mutate_selector_del(s, 'css', '.newsletter-signup')
 
         l = NewsLoader(selector=s)
 
@@ -42,11 +43,12 @@ class NYTimesSpider(NewsSitemapSpider):
         l.add_opengraph()
         l.add_scrapymeta(response)
 
+        l.add_xpath('headline', '//*[contains(@class, "Post__headline")]//text()')
+        l.add_xpath('section', '//*[contains(@class, "Post__kicker")]//text()')
         l.add_xpath('bodytext', '//*[contains(@class, "story-body") or '
                                     'contains(@class, "Post__body")]//text()')
         l.add_xpath('bodytext', '//div[contains(@class, "body--story")]//p//text()')
-        l.add_xpath('headline', '//*[contains(@class, "Post__headline")]//text()')
-        l.add_xpath('section', '//*[contains(@class, "Post__kicker")]//text()')
+        l.add_css('bodytext', '.interactive-graphic ::text')
 
 
         return l.load_item()
