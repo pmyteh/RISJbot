@@ -1,5 +1,7 @@
 projects:
   default: 166147
+  digitalborn: 235050
 stacks:
-    default: scrapy:1.3-py3
+  default: scrapy:1.3-py3
+  digitalborn: scrapy:1.3-py3
 requirements_file: requirements.txt
