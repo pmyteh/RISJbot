@@ -10,6 +10,9 @@ from scrapy.exceptions import NotConfigured
 logger = logging.getLogger(__name__)
 
 class StripRawPage(object):
+    """RISJbot is configured to store a Base64-encoded gzipped version of the
+    raw Response in its JSON output by default. This pipeline class removes
+    it when needed (for various reasons)."""
     def __init__(self, enabled=False):
         if not enabled:
             raise NotConfigured
