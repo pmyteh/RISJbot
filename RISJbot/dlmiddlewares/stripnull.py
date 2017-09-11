@@ -15,6 +15,8 @@ class StripNull(object):
 
        We don't want to do this for possible binaries (like gzip compressed
        sitemaps, for example).
+
+       See: https://github.com/scrapy/scrapy/issues/2481
     """
 
     def __init__(self, stats, settings):
