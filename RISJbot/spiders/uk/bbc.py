@@ -52,6 +52,8 @@ class BBCSpider(NewsRSSFeedSpider):
         l.add_xpath('bodytext', '//div[contains(@class, "main_article_text")]//text()') # Newsbeat
         l.add_xpath('bodytext', '//div[contains(@class, "map-body")]//text()') # media-asset-page
         l.add_xpath('bodytext', '//div[contains(@class, "story-body")]//text()') # Sport
+        l.add_xpath('summary',  '//div[contains(@class, "vxp-media__summary")]//text()') # Videos
+        l.add_xpath('bodytext',  '//div[contains(@class, "vxp-media__summary")]//text()') # Videos
 
         match = re.match
         # Newsbeat seems to use a different CMS, which doesn't supply the
