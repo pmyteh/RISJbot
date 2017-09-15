@@ -16,6 +16,7 @@ import os
 BOT_NAME = 'RISJbot'
 
 SPIDER_MODULES = ['RISJbot.spiders',
+                  'RISJbot.spiders.global',
                   'RISJbot.spiders.us',
                   'RISJbot.spiders.uk']
 NEWSPIDER_MODULE = 'RISJbot.spiders'
