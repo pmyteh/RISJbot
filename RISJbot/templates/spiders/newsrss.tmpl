@@ -17,9 +17,9 @@ class $classname(NewsRSSFeedSpider):
         """@url <newsurl>
         @returns items 1
         @scrapes bodytext bylines fetchtime firstpubtime modtime headline
-        @scrapes keywords section source summary url
+        @scrapes keywords section source summary url language
         @noscrapes bylines firstpubtime modtime
-        @noscrapes keywords section summary
+        @noscrapes keywords section summary language
         """
 
         s = response.selector
