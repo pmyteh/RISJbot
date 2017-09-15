@@ -156,6 +156,7 @@ class NewsLoader(ItemLoader):
         # This is Google News specific
         self.add_xpath('keywords', 'head/meta[@name="news_keywords"]/@content')
         self.add_xpath('keywords', 'head/meta[@name="keywords"]/@content')
+        self.add_xpath('language', '/html/@lang')
 
     def add_schemaorg(self, response, jsonld=True, microdata=True, rdfa=True):
         """Indirect to the add_schemaorg methods"""
