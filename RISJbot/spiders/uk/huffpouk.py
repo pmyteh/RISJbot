@@ -6,7 +6,7 @@ from RISJbot.utils import mutate_selector_del_xpath
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
-class HuffpoukSpider(NewsSitemapSpider):
+class HuffPoUKSpider(NewsSitemapSpider):
     name = 'huffpouk'
     # allowed_domains = ['huffingtonpost.co.uk']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
