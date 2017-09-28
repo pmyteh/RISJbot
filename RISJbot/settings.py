@@ -17,6 +17,8 @@ BOT_NAME = 'RISJbot'
 
 SPIDER_MODULES = ['RISJbot.spiders',
                   'RISJbot.spiders.global',
+                  'RISJbot.spiders.de',
+                  'RISJbot.spiders.fr',
                   'RISJbot.spiders.us',
                   'RISJbot.spiders.uk']
 NEWSPIDER_MODULE = 'RISJbot.spiders'
