@@ -36,7 +36,7 @@ TEMPLATES_DIR = 'RISJbot/templates'
 #os.environ['NLTK_DATA'] = NLTKDATA_DIR
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'RISJbot (+http://reutersinstitute.politics.ox.ac.uk/)'
+#USER_AGENT = 'RISJbot (+http://your.url.here.invalid/)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -49,7 +49,7 @@ ROBOTSTXT_OBEY = True
 from .aws_credentials import *
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
-FEED_URI = 's3://reutersinstitute-risjbot/166147/main/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
+FEED_URI = AWS_URI_PREFIX+'main/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
 FEED_FORMAT = 'jsonlines'
 # FEED_EXPORT_FIELDS = list(NewsItem().fields.keys()) # Critical for CSV
 FEED_STORE_EMPTY = True
@@ -134,34 +134,20 @@ DOWNLOADER_MIDDLEWARES = {
     'RISJbot.dlmiddlewares.stripnull.StripNull': 543,
 }
 
-# AP returns responses will ASCII NUL bytes embedded in them.
+# AP returns responses with ASCII NUL bytes embedded in them.
 # This is very bad for Scrapy's parsing code. Strip them.
 STRIPNULL_ENABLED = True
-#STRIPNULL_SPIDERS = ['ap']
 
 # Map all 'www.cnn.com' URLs to the equivalent 'edition.cnn.com' (dedupe)
 # TN, 2017/03/27
 EQUIVALENTDOMAINS_ENABLED = True
 EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 
-# Enable persistent storage in .scrapy (TN, 2017-02-09)
-#DOTSCRAPY_ENABLED = True
-
 # Disable the dupe filter: BaseDupeFilter is a no-op. If a filter is
 # applied on top of RefetchControl, they both limit
 # recrawls. This interaction may be undesirable (but is probably fine).
 # (TN, 2017-02-14)
 #DUPEFILTER_CLASS = 'scrapy.dupefilters.BaseDupeFilter'
-
-# Close spider after 8.5 minutes, to allow for a 10 minute re-launch timer
-# without overlap.
-# TODO: Adjust to suit actual long-run crawl times
-# TODO: May be better set in Scrapinghub, along with the re-launch timer
-# Deleted: takes too long to stop to be really useful; just rely on
-# scrapinghub refusing to queue the same crawl if it's already queued or
-# running (TN: 2017-03-27)
-#CLOSESPIDER_TIMEOUT = 510
-
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -177,15 +163,12 @@ EXTENSIONS = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 }
 
-# Won't run locally, despite this setting: relies on variables set by
-# ScrapingHub.
-FLEXIBLEDOTSCRAPY_ENABLED = True
-FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
-# Also relies on AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, set above.
 # FIXME: The following lines should (according to the docs, allow the syncing
 #        to our own S3 bucket using scrapy_dotpersistence.DotScrapyPersistence.
 #        In practice, they seem to be being overridden by ScrapingHub, which is
-#        a little useless.
+#        a little useless. So we have forked DotScrapyPersistence as
+#        FlexibleDotScrapyPersistence, enabled below.
+#DOTSCRAPY_ENABLED = True
 #ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
 #ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
 #ADDONS_AWS_USERNAME = None
@@ -195,8 +178,10 @@ FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
 #DOTSCRAPY_S3_FOLDER = None
 #DOTSCRAPY_S3_BUCKET = "reutersinstitute-risjbot"
 
+FLEXIBLEDOTSCRAPY_ENABLED = True
+FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
+# Also relies on AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, set above.
 
-# TODO: Add an ML metadata-generating pipeline
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
@@ -212,7 +197,6 @@ ITEM_PIPELINES = {
 # Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
 # TN 2017/03/27
 STRIPRAWPAGE_ENABLED = False
-
 
 # A contract promising *not* to collect data for a particular field
 # TN: 2017-02-27
