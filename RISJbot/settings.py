@@ -44,9 +44,19 @@ ROBOTSTXT_OBEY = True
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
-# aws_credentials.py should set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
-# in a similar manner to this file.
+# aws_credentials.py contains your AWS S3 path and credentials.
+# aws_credentials.py.example gives the format.
 from .aws_credentials import *
+
+# splash_credentials.py contains the path and credentials for a Splash
+# server for handling javascript-heavy pages. ScrapingHub offer Splash
+# servers as a service, or you can self-host - it's Free software.
+# This is only necessary if you are using a crawler that needs complex
+# JS handling, such as the Vice crawlers in this project.
+try:
+    from .splash_credentials import *
+except ImportError:
+    pass
 
 # Configure the feed export. Relies on the AWS_* variables being correctly set.
 FEED_URI = AWS_URI_PREFIX+'main/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
@@ -131,6 +141,9 @@ EXTRACTJSONLD_ENABLED = True
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'RISJbot.dlmiddlewares.offsitedownloadershim.OffsiteDownloaderShim': 100,
+    'scrapy_splash.SplashCookiesMiddleware': 723,
+    'scrapy_splash.SplashMiddleware': 725,
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
     'RISJbot.dlmiddlewares.stripnull.StripNull': 543,
 }
 

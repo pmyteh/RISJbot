@@ -4,6 +4,7 @@ import logging
 import urllib
 from scrapy.http import Request
 from scrapy.item import BaseItem
+from scrapy.exceptions import NotConfigured
 
 logger = logging.getLogger(__name__)
 
