@@ -31,6 +31,9 @@ This project contains a number of scrapy spiders to extract data from specific U
 The source of URLs to crawl is generally either a public RSS feed of new articles, or the sitemaps
 published to alert Google News of the articles available.
 
+A spider class is also available for doing a link-following crawl via Splash (a headless browser
+which allows JavaScript-heavy pages to be properly handled).
+
 ## Middlewares and extensions
 In addition to the spiders, there are a number of interesting new pieces of middleware and extensions which expand
 crawling possibilities for this and other projects:
