@@ -13,7 +13,7 @@ This project contains a number of scrapy spiders to extract data from specific U
 * Daily Mail
 * Fox News
 * Guardian
-* Huffington Post (UK)
+* Huffington Post (US and UK)
 * Independent
 * Metro
 * Mirror
@@ -24,6 +24,7 @@ This project contains a number of scrapy spiders to extract data from specific U
 * Sun
 * Telegraph
 * USA Today
+* Vice (US and UK)
 * Washington Post
 * Yahoo! (US)
 
