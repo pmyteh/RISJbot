@@ -70,7 +70,8 @@ class BusinessInsiderUSSpider(NewsSitemapSpider):
         # BI prints times for recent articles as "hours since published". But
         # helpfully includes a unix timestamp in its metadata.
         ts = s.xpath('//span[@data-bi-format="date"]/@rel').extract_first()
-        l.add_value('modtime', datetime.fromtimestamp(int(ts)).isoformat())
+        if ts:
+            l.add_value('modtime', datetime.fromtimestamp(int(ts)).isoformat())
         l.add_xpath('section', '//h2[contains(@class, "vert-name")]//text()')
 
         return l.load_item()
