@@ -25,8 +25,11 @@ RISJbot/spiders/basespiders.py
 RISJbot/spiders/de/__init__.py
 RISJbot/spiders/de/businessinsiderde.py
 RISJbot/spiders/de/huffpode.py
+RISJbot/spiders/de/vicede.py
 RISJbot/spiders/fr/__init__.py
+RISJbot/spiders/fr/businessinsiderfr.py
 RISJbot/spiders/fr/huffpofr.py
+RISJbot/spiders/fr/vicefr.py
 RISJbot/spiders/global/__init__.py
 RISJbot/spiders/global/buzzfeedall.py
 RISJbot/spiders/uk/__init__.py

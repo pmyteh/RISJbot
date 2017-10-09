@@ -7,7 +7,8 @@ This project contains a number of scrapy spiders to extract data from specific U
 * ABC
 * AP
 * BBC
-* Buzzfeed (US and UK)
+* Business Insider (US, UK, and DE)
+* Buzzfeed (US and UK, plus a global feed)
 * CBS
 * CNN
 * Daily Mail

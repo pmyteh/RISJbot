@@ -5,6 +5,7 @@ from RISJbot.loaders import NewsLoader
 from RISJbot.utils import mutate_selector_del
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
+from scrapy.http import Request
 from urllib.parse import urlparse, urlunparse
 from datetime import datetime
 
@@ -24,10 +25,10 @@ class BusinessInsiderUSSpider(NewsSitemapSpider):
         if "IR=C" in p.query:
             pass
         elif p.query:
-            url = urlunparse((p.scheme, p.netloc, p.path,
+            url = urlunparse((p.scheme, p.netloc, p.path, p.params,
                               p.query+"&IR=C", p.fragment))
         else:
-            url = urlunparse((p.scheme, p.netloc, p.path,
+            url = urlunparse((p.scheme, p.netloc, p.path, p.params,
                               "IR=C", p.fragment))
         
         return Request(url, callback=callback, meta=meta)
@@ -70,6 +71,6 @@ class BusinessInsiderUSSpider(NewsSitemapSpider):
         # helpfully includes a unix timestamp in its metadata.
         ts = s.xpath('//span[@data-bi-format="date"]/@rel').extract_first()
         l.add_value('modtime', datetime.fromtimestamp(int(ts)).isoformat())
-        l.add_xpath('section', '//meta[@name="sailthru.verticals"]/@content')
+        l.add_xpath('section', '//h2[contains(@class, "vert-name")]//text()')
 
         return l.load_item()
