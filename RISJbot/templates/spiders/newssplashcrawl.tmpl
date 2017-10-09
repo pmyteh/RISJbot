@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+from RISJbot.spiders.basespiders import NewsSplashCrawlSpider
+from RISJbot.loaders import NewsLoader
+# Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
+from RISJbot.utils import mutate_selector_del
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.loader.processors import Identity, TakeFirst
+from scrapy.loader.processors import Join, Compose, MapCompose
+
+class $classname(NewsSplashCrawlSpider):
+    name = '$name'
+    allowed_domains = ['$domain']
+    start_urls = ['http://$domain/']
+
+    rules = (
+        Rule(LinkExtractor(allow=r'Items/'),
+                           callback='parse_page',
+                           # follow=True will follow links from the page
+                           # as well as extracting an article from it.
+                           # If start_urls is a full article list or something
+                           # similar, this should be removed.
+                           follow=True
+            ),
+    )
+
+    def parse_page(self, response):
+        """@url <newsurl>
+        @returns items 1
+        @scrapes bodytext bylines fetchtime firstpubtime modtime headline
+        @scrapes keywords section source summary url language
+        @noscrapes bylines firstpubtime modtime
+        @noscrapes keywords section summary language
+        """
+        s = response.selector
+        # Remove any content from the tree before passing it to the loader.
+        # There aren't native scrapy loader/selector methods for this.
+        # CSS is better for operating on classes than XPath, otherwise
+        # either will do.        
+        #mutate_selector_del(s, 'xpath' '//*[@id='someid']')
+        #mutate_selector_del(s, 'css', '.classname')
+
+        l = NewsLoader(selector=s)
+
+        # Add a number of items of data that should be standardised across
+        # providers. Can override these (for TakeFirst() fields) by making
+        # l.add_* calls above this line, or supplement gaps by making them
+        # below.
+        l.add_fromresponse(response)
+        l.add_htmlmeta()
+        l.add_schemaorg(response)
+        l.add_opengraph()
+        l.add_scrapymeta(response)
+        #l.add_schemaorg_bylines()
+        #l.add_dublincore()
+
+        return l.load_item()
