@@ -21,12 +21,15 @@ class NewsRSSFeedSpider(XMLFeedSpider):
         url = selector.xpath('link/text()').extract_first()
 #        self.logger.debug('Meta: {}'.format(meta))
         if url:
-            yield Request(url.strip(), callback=self.parse_page, meta=meta)
+            yield self.url_to_request(url, meta)
         else:
             self.logger.debug('No URL for %s' % str(selector.extract()))
 
     def parse_page(self, response):
         raise NotImplementedError
+
+    def url_to_request(self, url, meta):
+        return Request(url.strip(), callback=self.parse_page, meta=meta)
 
 class NewsAtomFeedSpider(XMLFeedSpider):
     iterator = 'iternodes' # you can change this; see the docs
@@ -34,10 +37,13 @@ class NewsAtomFeedSpider(XMLFeedSpider):
 
     def parse_node(self, response, selector):
         for url in selector.xpath('link/@href').extract():
-            yield Request(url.strip(), callback=self.parse_page)
+            yield self.url_to_request(url)
 
     def parse_page(self, response):
         raise NotImplementedError
+
+    def url_to_request(self, url):
+        return Request(url.strip(), callback=self.parse_page)
 
 
 # TODO: Consider extending the NewsSitemapSpider to extract Google News metadata
@@ -80,17 +86,23 @@ class NewsSitemapSpider(SitemapSpider):
             if s.type == 'sitemapindex':
                 for loc in iterloc(s, self.sitemap_alternate_links):
                     if any(x.search(loc) for x in self._follow):
-                        yield Request(loc, callback=self._parse_sitemap)
+                        yield self.url_to_request(loc,
+                                                  callback=self._parse_sitemap)
             elif s.type == 'urlset':
                 for loc, meta in self.iterurlset(s):
                     for r, c in self._cbs:
                         if r.search(loc):
                             try:
-                                yield Request(loc, callback=c, meta=meta)
+                                yield self.url_to_request(loc,
+                                                          callback=c,
+                                                          meta=meta)
                                 break
                             except Exception as e:
                                 self.logger.error("Failed to queue {}: {}".format(
                                                     loc, e))
+
+    def url_to_request(self, url, meta={}):
+        return Request(url.strip(), callback=self.parse_page, meta=meta)
 
     @staticmethod
     def iterurlset(it, alt=False):
