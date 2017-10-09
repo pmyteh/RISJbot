@@ -21,15 +21,17 @@ class NewsRSSFeedSpider(XMLFeedSpider):
         url = selector.xpath('link/text()').extract_first()
 #        self.logger.debug('Meta: {}'.format(meta))
         if url:
-            yield self.url_to_request(url, meta)
+            yield self.url_to_request(url, meta=meta)
         else:
             self.logger.debug('No URL for %s' % str(selector.extract()))
 
     def parse_page(self, response):
         raise NotImplementedError
 
-    def url_to_request(self, url, meta):
-        return Request(url.strip(), callback=self.parse_page, meta=meta)
+    def url_to_request(self, url, callback=None, meta={}):
+        if callback is None:
+            callback = self.parse_page
+        return Request(url.strip(), callback=callback, meta=meta)
 
 class NewsAtomFeedSpider(XMLFeedSpider):
     iterator = 'iternodes' # you can change this; see the docs
@@ -42,8 +44,10 @@ class NewsAtomFeedSpider(XMLFeedSpider):
     def parse_page(self, response):
         raise NotImplementedError
 
-    def url_to_request(self, url):
-        return Request(url.strip(), callback=self.parse_page)
+    def url_to_request(self, url, callback=None, meta={}):
+        if callback is None:
+            callback = self.parse_page
+        return Request(url.strip(), callback=callback, meta=meta)
 
 
 # TODO: Consider extending the NewsSitemapSpider to extract Google News metadata
@@ -101,8 +105,10 @@ class NewsSitemapSpider(SitemapSpider):
                                 self.logger.error("Failed to queue {}: {}".format(
                                                     loc, e))
 
-    def url_to_request(self, url, meta={}):
-        return Request(url.strip(), callback=self.parse_page, meta=meta)
+    def url_to_request(self, url, callback=None, meta={}):
+        if callback is None:
+            callback = self.parse_page
+        return Request(url.strip(), callback=callback, meta=meta)
 
     @staticmethod
     def iterurlset(it, alt=False):
