@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from RISJbot.spiders.basespiders import NewsSplashCrawlSpider
+from RISJbot.spiders.newssplashcrawlspider import NewsSplashCrawlSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
 from RISJbot.utils import mutate_selector_del

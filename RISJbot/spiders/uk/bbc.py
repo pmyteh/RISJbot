@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from RISJbot.spiders.newsrssfeedspider import NewsRSSFeedSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
-from RISJbot.utils import mutate_selector_del_xpath
-from RISJbot.spiders.basespiders import NewsRSSFeedSpider
+from RISJbot.utils import mutate_selector_del
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 import re
@@ -25,7 +25,7 @@ class BBCSpider(NewsRSSFeedSpider):
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.        
-        mutate_selector_del_xpath(s, '//*[@class="off-screen"]')
+        mutate_selector_del_xpath(s, 'xpath', '//*[@class="off-screen"]')
 
         l = NewsLoader(selector=s)
 

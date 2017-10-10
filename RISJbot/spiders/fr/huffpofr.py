@@ -8,3 +8,11 @@ class HuffPoFRSpider(HuffPoUKSpider):
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
     sitemap_urls = ['http://www.huffingtonpost.fr/custom-sitemaps/original-content-map.xml'] 
 
+    def parse_page(self, response):
+        """@url http://www.huffingtonpost.fr/2017/10/08/furieux-de-voir-le-fn-debarquer-dans-son-village-un-maire-propose-sa-demission_a_23236402/
+        @returns items 1
+        @scrapes bodytext bylines fetchtime firstpubtime modtime headline
+        @scrapes keywords section source summary url
+        """
+        return super().parse_page(response)
+

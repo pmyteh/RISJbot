@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from scrapy.spiders import CrawlSpider, Rule
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
 from RISJbot.utils import mutate_selector_del_xpath
 from scrapy.linkextractors import LinkExtractor
-from scrapy.spiders import CrawlSpider, Rule
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 import re

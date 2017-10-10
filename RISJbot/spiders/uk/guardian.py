@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from RISJbot.spiders.basespiders import NewsSitemapSpider
+from RISJbot.spiders.newssitemapspider import NewsSitemapSpider
 from RISJbot.loaders import NewsLoader
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
