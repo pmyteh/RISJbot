@@ -27,6 +27,8 @@ RISJbot/spiders/newssitemapspider.py
 RISJbot/spiders/newssplashcrawlspider.py
 RISJbot/spiders/base/__init__.py
 RISJbot/spiders/base/businessinsiderspider.py
+RISJbot/spiders/base/buzzfeednewscrawlspider.py
+RISJbot/spiders/base/buzzfeedspider.py
 RISJbot/spiders/base/huffpospider.py
 RISJbot/spiders/base/vicespider.py
 RISJbot/spiders/de/__init__.py
@@ -35,6 +37,7 @@ RISJbot/spiders/de/huffpode.py
 RISJbot/spiders/de/vicede.py
 RISJbot/spiders/fr/__init__.py
 RISJbot/spiders/fr/businessinsiderfr.py
+RISJbot/spiders/fr/buzzfeedfr.py
 RISJbot/spiders/fr/huffpofr.py
 RISJbot/spiders/fr/vicefr.py
 RISJbot/spiders/global/__init__.py

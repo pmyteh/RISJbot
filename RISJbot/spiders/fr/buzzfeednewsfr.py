@@ -2,12 +2,12 @@
 from RISJbot.spiders.base.buzzfeednewscrawlspider import BuzzfeedNewsCrawlSpider
 
 # NOTE: Inherits parsing code etc., overriding only the name and start URL.
-class $classname(BuzzfeedSpider):
-    name = '$name'
-    start_urls = ['https://www.buzzfeed.com/news?country=XX-XX']
+class BuzzfeedNewsFRSpider(BuzzfeedNewsCrawlSpider):
+    name = 'buzzfeednewsfr'
+    start_urls = ['https://www.buzzfeed.com/news?country=fr-fr']
 
     def parse_page(self, response):
-        """@url <url>
+        """@url https://www.buzzfeed.com/davidperrotin/la-patronne-de-free-epinglee-par-cash-investigation-decoree
         @returns items 1
         @scrapes bodytext bylines fetchtime headline modtime
         @scrapes section source summary url keywords
