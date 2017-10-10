@@ -22,7 +22,8 @@ class ViceSpider(NewsSplashCrawlSpider):
        ScrapingHub for those going the cloud route)."""
     #name = 'viceXX'
     allowed_domains = ['vice.com']
-    #start_urls = ['https://www.vice.com/XX_XX/latest']
+    #start_urls = ['https://www.vice.com/XX_XX/latest',
+    #              'https://www.vice.com/XX_XX/latest?page=2']
 
     #rules = (
     #    Rule(
