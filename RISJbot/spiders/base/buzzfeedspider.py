@@ -7,12 +7,6 @@ from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
 class BuzzfeedSpider(NewsRSSFeedSpider):
-    #name = 'buzzfeedXX'
-    # allowed_domains = ['buzzfeed.com']
-    #start_urls = ['https://www.buzzfeed.com/news.xml?country=XX']
-
-    # RSSFeedSpider parses the RSS feed and calls parse_page(response) as a
-    # callback for each page it finds in the feed.
     def parse_page(self, response):
         s = response.selector
         # Remove any content from the tree before passing it to the loader.

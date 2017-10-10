@@ -7,11 +7,6 @@ from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
 class HuffPoSpider(NewsSitemapSpider):
-    #name = 'huffpoXX'
-    # allowed_domains = ['www.huffingtonpost.com']
-    # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    #sitemap_urls = ['http://www.huffingtonpost.XX/sitemaps/sitemap-google-news.xml']
-
     def parse_page(self, response):
         s = response.selector
         # Remove any content from the tree before passing it to the loader.

@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+from RISJbot.spiders.base.huffpospider import HuffPoSpider
+
+# NOTE: Inherits parsing code etc., overriding only the name and start URL.
+class $classname(HuffPoSpider):
+    name = '$name'
+    # allowed_domains = ['$domain']
+    # A list of XML sitemap files, or suitable robots.txt files with pointers.
+    sitemap_urls = ['http://$domain/original-content-map.xml'] 
+
+    def parse_page(self, response):
+        """@url <url>
+        @returns items 1
+        @scrapes bodytext bylines fetchtime firstpubtime modtime headline
+        @scrapes keywords section source summary url
+        """
+        return super().parse_page(response)

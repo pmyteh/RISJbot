@@ -20,17 +20,7 @@ class ViceSpider(NewsSplashCrawlSpider):
        executed. So we fall back on Splash, a scriptable headless Python
        browser that works well with Scrapy (and can be obtained hosted on
        ScrapingHub for those going the cloud route)."""
-    #name = 'viceXX'
     allowed_domains = ['vice.com']
-    #start_urls = ['https://www.vice.com/XX_XX/latest',
-    #              'https://www.vice.com/XX_XX/latest?page=2']
-
-    #rules = (
-    #    Rule(
-    #         LinkExtractor(allow=r'/XX_XX/article/|/story/'),
-    #         callback='parse_page',
-    #        ),
-    #)
 
     def parse_page(self, response):
         s = response.selector

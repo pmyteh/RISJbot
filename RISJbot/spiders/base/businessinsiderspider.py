@@ -10,11 +10,6 @@ from urllib.parse import urlparse, urlunparse
 from datetime import datetime
 
 class BusinessInsiderSpider(NewsSitemapSpider):
-    #name = 'businessinsiderxx'
-    # allowed_domains = ['www.businessinsider.com']
-    # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    #sitemap_urls = ['http://www.businessinsider.XX/sitemap?map=google-news&IR=C'] 
-
     def url_to_request(self, url, callback=None, meta={}):
         if callback is None:
             callback = self.parse_page
