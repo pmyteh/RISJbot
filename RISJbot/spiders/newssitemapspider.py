@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from scrapy.spiders import XMLFeedSpider
+from scrapy.spiders import SitemapSpider
 from scrapy.http import Request
 from RISJbot.utils import NewsSitemap
 from scrapy.utils.sitemap import sitemap_urls_from_robots
