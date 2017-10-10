@@ -10,7 +10,7 @@ from urllib.parse import urlparse, urlunparse
 from datetime import datetime
 
 class BusinessInsiderFRSpider(NewsRSSFeedSpider):
-    """This class contains code in common with BusinessInsiderUSSpider,
+    """This class contains code in common with BusinessInsiderSpider,
        but is built on a different base: BI France doesn't publish a sitemap
        that I can find, so this is a NewsRSSFeedSpider."""
 
