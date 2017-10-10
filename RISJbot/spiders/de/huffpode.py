@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from RISJbot.spiders.uk.huffpouk import HuffPoUKSpider
+from RISJbot.spiders.base.huffpospider import HuffPoSpider
 
 # NOTE: Inherits parsing code etc., overriding only the name and start URL.
-class HuffPoDESpider(HuffPoUKSpider):
+class HuffPoDESpider(HuffPoSpider):
     name = 'huffpode'
     # allowed_domains = ['www.huffingtonpost.de']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
