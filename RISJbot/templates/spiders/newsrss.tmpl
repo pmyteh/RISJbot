@@ -41,6 +41,7 @@ class $classname(NewsRSSFeedSpider):
         l.add_schemaorg(response)
         l.add_opengraph()
         l.add_scrapymeta(response)
+        l.add_readability(response)
         #l.add_schemaorg_bylines()
         #l.add_dublincore()
 

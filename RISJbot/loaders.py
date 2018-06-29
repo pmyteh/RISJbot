@@ -387,3 +387,18 @@ class NewsLoader(ItemLoader):
                            response.meta.get('refetchcontrol_previous')
                           )
 
+    def add_readability(self, response):
+        """Extracts content using readability-lxml. This is non-specific,
+           but flexible, and a good fallback."""
+
+        readified_doc = readability.readability.Document(response.text)
+
+        # There is a .title() method, but short_title() strips chaff
+        self.add_value('headline',
+                       readified_doc.short_title())
+
+        reparsed = lxml.html.fromstring(readified_doc.summary())
+
+        self.add_value('bodytext',
+                       reparsed.xpath('//body//text()')
+                      )

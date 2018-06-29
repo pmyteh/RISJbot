@@ -5,6 +5,7 @@ pronouncing==0.1.5
 #nltk==3.2.2
 #numpy==1.12.1 # Requirement of some pickled data we use from nltk
 scrapy-dotpersistence==0.3.0
+readability-lxml==0.7
 #https://github.com/pmyteh/scrapy-dotpersistence/archive/20fe43b3b68be7de0ee771b6a89acdc25ee5677b.zip#egg=scrapy-dotpersistence==0.3.0
 #https://github.com/nltk/nltk_contrib/archive/c9da2c29777ca9df650740145f1f4a375ccac961.zip#egg=nltk_contrib==3.2.2
 
