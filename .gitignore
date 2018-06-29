@@ -3,3 +3,4 @@ RISJbot/aws_credentials.py
 RISJbot/splash_credentials.py
 build/*
 **/*.pyc
+**/risj*.py
