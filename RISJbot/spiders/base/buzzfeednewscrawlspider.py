@@ -13,7 +13,8 @@ class BuzzfeedNewsCrawlSpider(CrawlSpider):
     allowed_domains = ['buzzfeed.com']
 
     rules = (
-        Rule(LinkExtractor(allow=r'^https?://(www\.)?buzzfeed.com/[a-z]+/[-a-z0-9]+$'),
+        Rule(LinkExtractor(allow=r'^https?://(www\.)?buzzfeed.com/[a-z]+/[-a-z0-9]+$',
+                           deny= r'^https?://(www\.)?buzzfeed.com/(about|help|tools)/'),
              callback='parse_page'),
     )
 

@@ -37,7 +37,7 @@ RISJbot/spiders/de/huffpode.py
 RISJbot/spiders/de/vicede.py
 RISJbot/spiders/fr/__init__.py
 RISJbot/spiders/fr/businessinsiderfr.py
-RISJbot/spiders/fr/buzzfeedfr.py
+RISJbot/spiders/fr/buzzfeednewsfr.py
 RISJbot/spiders/fr/huffpofr.py
 RISJbot/spiders/fr/vicefr.py
 RISJbot/spiders/global/__init__.py
@@ -45,6 +45,7 @@ RISJbot/spiders/global/buzzfeedall.py
 RISJbot/spiders/uk/__init__.py
 RISJbot/spiders/uk/bbc.py
 RISJbot/spiders/uk/businessinsideruk.py
+RISJbot/spiders/uk/buzzfeednewsuk.py
 RISJbot/spiders/uk/buzzfeeduk.py
 RISJbot/spiders/uk/dailymail.py
 RISJbot/spiders/uk/guardian.py
@@ -62,6 +63,7 @@ RISJbot/spiders/us/abc.py
 RISJbot/spiders/us/ap.py
 RISJbot/spiders/us/businessinsiderus.py
 RISJbot/spiders/us/buzzfeed.py
+RISJbot/spiders/us/buzzfeednewsus.py
 RISJbot/spiders/us/cbs.py
 RISJbot/spiders/us/cnn.py
 RISJbot/spiders/us/foxnews.py
