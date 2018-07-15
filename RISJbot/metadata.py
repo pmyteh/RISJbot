@@ -66,7 +66,7 @@ class RISJMetadataExtractor(object):
                     if (re.match(r'https?://schema.org/?', d['@context']) and
                             d['@type'] == 'NewsArticle'):
                         outd.update(d)
-                except KeyError:
+                except (KeyError, TypeError):
                     continue
         if microdata:
             for d in self.mdedata:

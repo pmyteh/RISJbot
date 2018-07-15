@@ -22,6 +22,9 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
+# readability is very chatty
+readability.readability.log.setLevel('WARNING')
+
 dateparsersettings = {'RETURN_AS_TIMEZONE_AWARE': True,}
 
 logger = logging.getLogger(__name__)
