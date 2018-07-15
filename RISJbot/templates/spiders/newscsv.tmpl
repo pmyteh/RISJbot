@@ -10,12 +10,13 @@ class $classname(NewsCSVFeedSpider):
     name = '$name'
     # allowed_domains = ['$domain']
     start_urls = ['http://$domain/path/to/feed.csv']
+    field = 'url'
     delimiter = '\t'
     quotechar = "'"
     # headers = ['url', 'foo', 'bar']
 
-    # CSVFeedSpider parses the CSV file and calls parse_page(response) as a
-    # callback for each page it finds in the 'url' field in the feed.
+    # NewsCSVFeedSpider parses the CSV file and calls parse_page(response)
+    # for each page it finds in the given field in the feed.
     def parse_page(self, response):
         """@url <newsurl>
         @returns items 1

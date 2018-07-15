@@ -22,9 +22,11 @@ RISJbot/pipelines/striprawpage.py
 RISJbot/pipelines/wordcount.py
 RISJbot/spiders/__init__.py
 RISJbot/spiders/newsatomfeedspider.py
+RISJbot/spiders/newscsvfeedspider.py
 RISJbot/spiders/newsrssfeedspider.py
 RISJbot/spiders/newssitemapspider.py
 RISJbot/spiders/newssplashcrawlspider.py
+RISJbot/spiders/risjtt2017.py
 RISJbot/spiders/base/__init__.py
 RISJbot/spiders/base/businessinsiderspider.py
 RISJbot/spiders/base/buzzfeednewscrawlspider.py

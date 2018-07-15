@@ -9,6 +9,8 @@
 import dateparser
 import logging
 import re
+import readability.readability
+import lxml
 from pprint import pprint
 from gzip import compress
 from base64 import b64encode
