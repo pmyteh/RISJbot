@@ -1,6 +1,7 @@
 .scrapy
 RISJbot/aws_credentials.py
 RISJbot/splash_credentials.py
+project.egg-info/*
 build/*
 **/*.pyc
 **/risj*.py
