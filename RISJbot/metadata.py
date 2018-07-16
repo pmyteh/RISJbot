@@ -36,7 +36,7 @@ class RISJMetadataExtractor(object):
             try:
                 self.jlde = JsonLdExtractor()
                 self.jldata = self.jlde.extract(self.response.text)
-            except JSONDecodeError:
+            except (JSONDecodeError, TypeError):
                 self.jldata = []
             finally:
                 # Sometimes we get this in the meta dict from RISJExtractJSONLD
