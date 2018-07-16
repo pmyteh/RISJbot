@@ -47,9 +47,17 @@ class UnwantedContent(object):
         # Responses, before they have made it to the Spider and been decoded.
         # In any case, we don't want to edit sitemap files (or RSS for that
         # matter. Filter this strictly to non-sitemap objects.
+
+        try:
+            sel = logger.selector
+        except AttributeError:
+            logger.warning("No selector for {}; probably non-HTML".format(
+                                    response))
+            return None
+
         if not response.meta.get('sitemap'):
             for xpath_str in self.xpaths:
-                for node in response.selector.root.xpath(xpath_str):
+                for node in sel.root.xpath(xpath_str):
                     node.getparent().remove(node)
         return None # Success
 
