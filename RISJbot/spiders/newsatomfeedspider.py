@@ -11,7 +11,7 @@ class NewsAtomFeedSpider(XMLFeedSpider):
 
     def parse_node(self, response, selector):
         for url in selector.xpath('link/@href').extract():
-            yield self.url_to_request(url)
+            yield self.url_to_request(url, meta={'originalurl': url})
 
     def parse_page(self, response):
         raise NotImplementedError

@@ -11,6 +11,7 @@ import scrapy
 class NewsItem(scrapy.Item):
     source = scrapy.Field()
     url = scrapy.Field()
+    originalurl = scrapy.Field()
     fetchtime = scrapy.Field()
     modtime = scrapy.Field()
     firstpubtime = scrapy.Field()

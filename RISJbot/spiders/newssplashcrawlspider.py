@@ -34,6 +34,7 @@ class NewsSplashCrawlSpider(CrawlSpider):
     def start_requests(self):
         for url in self.start_urls:
             yield SplashRequest(url,
+                meta={'originalurl': url},
                 endpoint='render.html',
             )
 

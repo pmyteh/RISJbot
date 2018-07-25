@@ -73,7 +73,7 @@ class NewsSitemapSpider(SitemapSpider):
         for d in it:
     #        logger.debug("{}".format(d))
 
-            meta = {'NewsSitemap': d}
+    #        meta = {'NewsSitemap': d}
     #            meta = {'newsmeta': {}}
     #            nm = meta['newsmeta']
 
@@ -89,7 +89,7 @@ class NewsSitemapSpider(SitemapSpider):
     #                        nm['firstpubtime'] = v.strip()
     #                    elif k == 'title':
     #                        nm['headline'] = v.strip()
-            yield (loc, meta)
+            yield (loc, {'NewsSitemap': d, 'originalurl': loc})
 
             # Also consider alternate URLs (xhtml:link rel="alternate")
             # NOTE: different interface than scrapy.spiders.SitemapSpider;
@@ -97,5 +97,5 @@ class NewsSitemapSpider(SitemapSpider):
             if alt:
                 for k, v in d.items():
                     if k.startswith('alternate'):
-                        yield (v, meta)
+                        yield (v, {'NewsSitemap': d, 'originalurl': v})
 

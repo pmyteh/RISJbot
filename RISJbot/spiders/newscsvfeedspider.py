@@ -12,10 +12,11 @@ class NewsCSVFeedSpider(CSVFeedSpider):
     field = 'url'
 
     def parse_row(self, response, row):
-        meta = {}
         url = row[self.field]
         if url:
-            yield self.url_to_request(url, meta=meta, callback=self.parse_page)
+            yield self.url_to_request(url,
+                                      meta={'originalurl': url},
+                                      callback=self.parse_page)
         else:
             self.logger.debug('No URL for %s' % row)
 
