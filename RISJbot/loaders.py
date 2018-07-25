@@ -142,12 +142,8 @@ class NewsLoader(ItemLoader):
         #       but may be necessary to avoid duplicative crawls.
         self.add_value('url', response.url)
         self.add_value('rawpagegzipb64', response.body)
-        try:
-            self.add_value('fetchtime',
-                           str(response.headers['Date'], encoding='utf-8'))
-        except KeyError as e:
-            logger.warning("Can't extract date from {}: {}".format(
-                                response, e))
+        self.add_value('fetchtime',
+                       str(response.headers['Date'], encoding='utf-8'))
         # TODO: Consider (and check vs actual responses:)
         # self.add_value('modtime',
         #                str(response.headers['Last-Modified'],
