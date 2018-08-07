@@ -1,9 +1,29 @@
 # RISJbot
-A scrapy project to extract the text and metadata of articles from news websites.
+A scrapy project to extract the text and metadata of articles from news
+websites.
+
+## Installation
+
+This is a Scrapy project, so first you need a working Scrapy installation:
+https://docs.scrapy.org/en/latest/intro/install.html
+
+The second thing to do is to clone RISJbot and edit settings.py to set things
+up how you want them. The example settings file does most things sensibly.
+Make sure you set up a sensible place for the crawl data to be put.
+
+Third, customise a crawler for the site you want to scrape. There are some
+working examples in the project, so the 'guardian' crawler fetches articles
+from Britain's *The Guardian*, for example.
+
+The third thing is to run the crawler: `scrapy runspider guardian` will fetch
+its way through *The Guardian*. But at this point it's basically an ordinary
+Scrapy installation, and the regular Scrapy docs should see you through.
+
 
 ## Spiders
 
-This project contains a number of scrapy spiders to extract data from specific US and UK websites:
+This project contains a number of scrapy spiders to extract data from specific
+US and UK websites:
 * ABC
 * AP
 * BBC
@@ -29,19 +49,28 @@ This project contains a number of scrapy spiders to extract data from specific U
 * Washington Post
 * Yahoo! (US)
 
-The source of URLs to crawl is generally either a public RSS feed of new articles, or the sitemaps
-published to alert Google News of the articles available.
+Page formats change, so not all of these spiders may be currently operational.
+RISJbot now has a fallback text extractor using the readability library which
+may help a bit. Nevertheless, pull requests to fix spider brokenness are most
+welcome.
 
-A spider class is also available for doing a link-following crawl via Splash (a headless browser
-which allows JavaScript-heavy pages to be properly handled).
+The source of URLs to crawl is generally either a public RSS feed of new
+articles, or the sitemaps published to alert Google News of the articles
+available.
+
+A spider class is also available for doing a link-following crawl via Splash
+(a headless browser which allows JavaScript-heavy pages to be properly
+handled).
 
 ## Middlewares and extensions
-In addition to the spiders, there are a number of interesting new pieces of middleware and extensions which expand
-crawling possibilities for this and other projects:
+In addition to the spiders, there are a number of interesting new pieces of
+middleware and extensions which expand crawling possibilities for this and
+other projects:
 
 ### FlexibleDotScrapyPersistence
-An extension for projects hosted on ScrapingHub, using a hacky subclassing of DotScrapyPersistence to allow
-persistent content to be stored in an arbitrary S3 bucket rather than in ScrapingHub's own.
+An extension for projects hosted on ScrapingHub, using a hacky subclassing of
+DotScrapyPersistence to allow persistent content to be stored in an arbitrary
+S3 bucket rather than in ScrapingHub's own.
 
 ### RefetchControl
 This is a spider middleware to ignore requests to pages containing items
@@ -61,8 +90,8 @@ Depends on sqlite3 instead of bsddb3.
 ### EquivalentDomains
 Spider middleware to coerce sets of equivalent domains to a single
 canonical location. This can deal with situations like
-http://editions.cnn.com and http://www.cnn.com, which deliver identical content.
-Should be put early in the chain.
+http://editions.cnn.com and http://www.cnn.com, which deliver identical
+content. Should be put early in the chain.
 
 ### ExtractJSONLD
 Spider middleware to extract JSON-LD blocks and save their data into the
