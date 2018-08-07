@@ -337,7 +337,7 @@ class NewsLoader(ItemLoader):
            or from Google News sitemaps."""
 
         if 'originalurl' in response.meta:
-            self.add_value('originalurl', response.meta['originalurl']
+            self.add_value('originalurl', response.meta['originalurl'])
 
         if 'newsmeta' in response.meta:
             for k in response.meta.get('newsmeta'):

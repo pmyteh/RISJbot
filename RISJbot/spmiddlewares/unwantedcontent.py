@@ -49,7 +49,7 @@ class UnwantedContent(object):
         # matter. Filter this strictly to non-sitemap objects.
 
         try:
-            sel = logger.selector
+            sel = response.selector
         except AttributeError:
             logger.warning("No selector for {}; probably non-HTML".format(
                                     response))
