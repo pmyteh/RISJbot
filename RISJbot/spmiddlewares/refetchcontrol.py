@@ -96,7 +96,7 @@ class RefetchControl(object):
 
         new = False
         if not os.path.isfile(dbpath):
-            logger.debug("Can't find database file {}. Regenerating.".format(
+            logger.info("Can't find database file {}. Regenerating.".format(
                             dbpath))
             # Will need regenerating
             new = True
@@ -107,7 +107,7 @@ class RefetchControl(object):
         self.dbs[spider.name].isolation_level = None
 
         if new or self.reset or getattr(spider, 'refetchcontrol_reset', False):
-            logger.debug("Resetting RefetchControl database.")
+            logger.info("Resetting RefetchControl database.")
             c = self.dbs[spider.name].cursor()
             c.execute("DROP TABLE IF EXISTS records")
             c.execute("DROP INDEX IF EXISTS idx_fetches_time")

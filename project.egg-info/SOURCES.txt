@@ -26,6 +26,7 @@ RISJbot/spiders/newscsvfeedspider.py
 RISJbot/spiders/newsrssfeedspider.py
 RISJbot/spiders/newssitemapspider.py
 RISJbot/spiders/newssplashcrawlspider.py
+RISJbot/spiders/risjicij.py
 RISJbot/spiders/risjtt2017.py
 RISJbot/spiders/base/__init__.py
 RISJbot/spiders/base/businessinsiderspider.py

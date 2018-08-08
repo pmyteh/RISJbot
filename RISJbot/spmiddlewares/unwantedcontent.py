@@ -51,8 +51,8 @@ class UnwantedContent(object):
         try:
             sel = response.selector
         except AttributeError:
-            logger.warning("No selector for {}; probably non-HTML".format(
-                                    response))
+#            logger.warning("No selector for {}; probably non-HTML".format(
+#                                    response))
             return None
 
         if not response.meta.get('sitemap'):
