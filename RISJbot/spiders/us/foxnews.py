@@ -10,19 +10,7 @@ class FoxNewsSpider(NewsSitemapSpider):
     name = 'foxnews'
     # allowed_domains = ['foxnews.com']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    sitemap_urls = ['http://www.foxnews.com/google_news_entertainment.xml',
-                    'http://www.foxnews.com/google_news_opinion.xml', 
-                    'http://www.foxnews.com/google_news_politics.xml',
-                    'http://www.foxnews.com/google_news_science.xml',
-                    'http://www.foxnews.com/google_news_tech.xml',
-                    'http://www.foxnews.com/google_news_sports.xml',
-                    'http://www.foxnews.com/google_news_weather.xml',
-                    'http://www.foxnews.com/google_news_leisure.xml',
-                    'http://www.foxnews.com/google_news_us.xml',
-                    'http://www.foxnews.com/google_news_world.xml',
-                    'http://www.foxnews.com/google_news_health.xml',
-                    'http://www.foxnews.com/google_news_travel.xml',
-                   ] 
+    sitemap_urls = ['https://www.foxnews.com/sitemap.xml?type=news']
 
     def parse_page(self, response):
         """@url http://www.foxnews.com/opinion/2017/02/28/if-trump-really-wants-to-restore-america-to-greatness-hell-have-to-compromise-with-democrats.html
