@@ -7,13 +7,13 @@ from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
 class BuzzfeedAllSpider(NewsSitemapSpider):
-    """This spider fetches the Buzzfeed sitemap and scrapes it. Despite
+    """This spider fetches the Buzzfeed News sitemap and scrapes it. Despite
        the URL's name, this fetches content in all languages, which is
        coded in news:language tags in the sitemap."""
 
     name = 'buzzfeedall'
     # allowed_domains = ['buzzfeed.com']
-    sitemap_urls = ['https://www.buzzfeed.com/sitemaps/en-us/sitemap_news.xml']
+    sitemap_urls = ['https://www.buzzfeed.com/sitemap/news.xml']
 
     # RSSFeedSpider parses the RSS feed and calls parse_page(response) as a
     # callback for each page it finds in the feed.
@@ -30,7 +30,7 @@ class BuzzfeedAllSpider(NewsSitemapSpider):
 
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
-        # There aren't native scrapy loader/selector methods for this.        
+        # There aren't native scrapy loader/selector methods for this.
         mutate_selector_del_xpath(s, '//*[contains(@class, "print") or contains(@class, "hidden")]') # Physical print only
 
         l = NewsLoader(selector=s)
