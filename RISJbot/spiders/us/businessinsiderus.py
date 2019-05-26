@@ -6,7 +6,7 @@ class BusinessInsiderUSSpider(BusinessInsiderSpider):
     name = 'businessinsiderus'
     # allowed_domains = ['www.businessinsider.com']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    sitemap_urls = ['http://www.businessinsider.com/sitemap?map=google-news&IR=C'] 
+    sitemap_urls = ['https://www.businessinsider.com/sitemap/google-news.xml'] 
 
     def parse_page(self, response):
         """@url http://www.businessinsider.com/ainsley-earhardt-rising-star-fox-friends-who-is-profile-2017-9?IR=C
