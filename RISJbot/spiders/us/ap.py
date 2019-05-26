@@ -9,7 +9,11 @@ from scrapy.loader.processors import Join, Compose, MapCompose
 import re
 
 class APSpider(CrawlSpider):
-    """APSpider crawls the Associated Press.
+    """UPDATE: bigstory.ap.org is defunct; a new crawler could be written
+       for https://apnews.com/, which seems to have a suitable sitemap.
+       Until that happens, APSpider is non-functional.
+
+       APSpider crawls the Associated Press.
 
        AP is a difficult beast to crawl; it has at least three different
        expressions of content on its own site (hosted.ap.org, hosted2.ap.org,
@@ -40,6 +44,8 @@ class APSpider(CrawlSpider):
       *: Should you decide to RSS crawl hosted.ap.org, the unadvertised 'raw'
          feed is at http://hosted.ap.org/lineups/RAWHEADS.rss
     """
+
+"""
     name = 'ap'
     allowed_domains = ['bigstory.ap.org']
     start_urls = ['http://bigstory.ap.org/latest']
@@ -50,13 +56,13 @@ class APSpider(CrawlSpider):
             )
 
     def parse_page(self, response):
-        """@url http://bigstory.ap.org/article/fc451fdf7e9a47c1b2b9ab95f55c3bfe/tusk-closing-2nd-term-eu-council-president
+"""        """@url http://bigstory.ap.org/article/fc451fdf7e9a47c1b2b9ab95f55c3bfe/tusk-closing-2nd-term-eu-council-president
         @returns items 1
         @scrapes bodytext bylines fetchtime modtime headline
         @scrapes keywords source summary url
         @noscrapes firstpubtime section
         """
-
+"""
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
         # There aren't native scrapy loader/selector methods for this.        
@@ -87,3 +93,4 @@ class APSpider(CrawlSpider):
         l.add_xpath('keywords', '//div[contains(@class, "tags")]//a/text()')
 
         return l.load_item()
+"""

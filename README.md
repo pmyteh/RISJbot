@@ -25,7 +25,7 @@ Scrapy installation, and the regular Scrapy docs should see you through.
 This project contains a number of scrapy spiders to extract data from specific
 US and UK websites:
 * ABC
-* AP
+* ~~AP~~ [currently non-functional]
 * BBC
 * Business Insider (US, UK, DE, and FR)
 * Buzzfeed (US, UK, and FR, plus a global feed)
