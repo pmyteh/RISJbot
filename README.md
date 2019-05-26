@@ -27,7 +27,7 @@ US and UK websites:
 * ABC
 * ~~AP~~ [currently non-functional]
 * BBC
-* Business Insider (US, UK, DE, and FR)
+* Business Insider (US, ~~UK~~, DE, and FR)
 * Buzzfeed (US, UK, and FR, plus a global feed)
 * CBS
 * CNN
