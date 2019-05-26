@@ -15,12 +15,7 @@ import os
 
 BOT_NAME = 'RISJbot'
 
-SPIDER_MODULES = ['RISJbot.spiders',
-                  'RISJbot.spiders.base',
-                  'RISJbot.spiders.de',
-                  'RISJbot.spiders.fr',
-                  'RISJbot.spiders.us',
-                  'RISJbot.spiders.uk']
+SPIDER_MODULES = ['RISJbot.spiders']
 NEWSPIDER_MODULE = 'RISJbot.spiders'
 
 # Location of templates for 'scrapy genspider' etc.
