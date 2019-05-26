@@ -24,8 +24,8 @@ class BBCSpider(NewsRSSFeedSpider):
         """
         s = response.selector
         # Remove any content from the tree before passing it to the loader.
-        # There aren't native scrapy loader/selector methods for this.        
-        mutate_selector_del_xpath(s, 'xpath', '//*[@class="off-screen"]')
+        # There aren't native scrapy loader/selector methods for this.
+        mutate_selector_del(s, 'xpath', '//*[@class="off-screen"]')
 
         l = NewsLoader(selector=s)
 
