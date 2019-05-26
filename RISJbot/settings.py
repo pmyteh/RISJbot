@@ -36,7 +36,9 @@ TEMPLATES_DIR = 'RISJbot/templates'
 #os.environ['NLTK_DATA'] = NLTKDATA_DIR
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'RISJbot (+http://your.url.here.invalid/)'
+# Note that if this is left unset (which uses a default Scrapy UA) then your
+# crawler may be blocked from the start.
+#USER_AGENT = 'RISJbot (+https://your.url.here.invalid/)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -192,7 +194,7 @@ EXTENSIONS = {
 #DOTSCRAPY_S3_BUCKET = "reutersinstitute-risjbot"
 
 FLEXIBLEDOTSCRAPY_ENABLED = True
-FLEXIBLEDOTSCRAPY_S3_BUCKET = 'reutersinstitute-risjbot'
+FLEXIBLEDOTSCRAPY_S3_BUCKET = 'pmyteh-risjbot'
 # Also relies on AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY, set above.
 
 # Configure item pipelines
