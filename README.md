@@ -54,6 +54,11 @@ RISJbot now has a fallback text extractor using the readability library which
 may help a bit. Nevertheless, pull requests to fix spider brokenness are most
 welcome.
 
+Do also be aware that there are some geographical issues that can be run into.
+USA Today, for example, provides a different site for users geolocated to the
+EU, which means that a working crawler can stop working when your computer
+moves.
+
 The source of URLs to crawl is generally either a public RSS feed of new
 articles, or the sitemaps published to alert Google News of the articles
 available.
