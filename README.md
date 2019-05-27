@@ -28,13 +28,13 @@ US and UK websites:
 * ~~AP~~ [currently non-functional]
 * BBC
 * Business Insider (US, ~~UK~~, DE, and FR)
-* Buzzfeed (US, UK, and FR, plus a global feed)
+* Buzzfeed (US, UK, ~~and FR,~~ plus a global feed)
 * CBS
 * CNN
 * Daily Mail
 * Fox News
 * Guardian
-* Huffington Post (US, UK, DE, and FR)
+* Huffington Post (US, UK, ~~DE,~~ and FR)
 * Independent
 * Metro
 * Mirror
