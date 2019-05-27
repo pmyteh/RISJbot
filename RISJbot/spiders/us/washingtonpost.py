@@ -11,7 +11,7 @@ class WashingtonPostSpider(NewsSitemapSpider):
     name = 'washingtonpost'
     # allowed_domains = ['washingtonpost.com']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    sitemap_urls = ['https://www.washingtonpost.com/news-sitemap-index.xml']
+    sitemap_urls = ['https://www.washingtonpost.com/news-sitemaps/index.xml']
 
     def parse_page(self, response):
         """@url https://www.washingtonpost.com/news/politics/wp/2017/03/27/trumps-approval-hits-a-new-low-of-36-percent-but-thats-not-the-bad-news/
