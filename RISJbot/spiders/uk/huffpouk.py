@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from RISJbot.spiders.base.huffpospider import HuffPoSpider
 
+# TODO: Currently non-functional because of a stupid Oath cookie-consent
+#       loop (even when collecting robots.txt)
+
 # NOTE: Inherits parsing code etc., overriding only the name and start URL.
 class HuffPoUKSpider(HuffPoSpider):
     name = 'huffpouk'

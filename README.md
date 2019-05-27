@@ -27,14 +27,14 @@ US and UK websites:
 * ABC
 * ~~AP~~ [currently non-functional]
 * BBC
-* Business Insider (US, ~~UK~~, DE, and FR)
-* Buzzfeed (US, UK, ~~and FR,~~ plus a global feed)
+* Business Insider (US, DE, and FR)
+* Buzzfeed (US and UK, plus a global feed)
 * CBS
 * CNN
 * Daily Mail
 * Fox News
 * Guardian
-* Huffington Post (US, UK, ~~DE,~~ and FR)
+* Huffington Post (US, ~~UK~~, and FR) [UK currently non-functional]
 * Independent
 * Metro
 * Mirror
