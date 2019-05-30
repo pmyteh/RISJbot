@@ -4,8 +4,8 @@ projects:
   twitterlinks: 325551
   icij: 336604
 stacks:
-  default: scrapy:1.3-py3
-  digitalborn: scrapy:1.3-py3
-  twitterlinks: scrapy:1.3-py3
-  icij: scrapy:1.3-py3
+  default: scrapy:1.6-py37
+  digitalborn: scrapy:1.6-py37
+  twitterlinks: scrapy:1.6-py37
+  icij: scrapy:1.6-py37
 requirements_file: requirements.txt
