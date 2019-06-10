@@ -2,6 +2,9 @@
 
 # Scrapy settings for RISJbot project
 #
+# This needs to be edited before running the crawler. If nothing else, the
+# USER_AGENT variable should be set to minimise the chance of blocking.
+#
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
 #
@@ -11,7 +14,9 @@
 
 from RISJbot.items import NewsItem
 from scrapy.utils.project import data_path
+from pathlib import Path
 import os
+import logging
 
 BOT_NAME = 'RISJbot'
 
@@ -43,7 +48,12 @@ ROBOTSTXT_OBEY = True
 
 # aws_credentials.py contains your AWS S3 path and credentials.
 # aws_credentials.py.example gives the format.
-from .aws_credentials import *
+# If you don't want to use AWS, then it is possible to configure Scrapy to
+# keep everything local.
+try:
+    from .aws_credentials import *
+except ImportError:
+    logging.warning("aws_credentials.py not set up: see seetings.py. ")
 
 # splash_credentials.py contains the path and credentials for a Splash
 # server for handling javascript-heavy pages. ScrapingHub offer Splash
@@ -55,8 +65,15 @@ try:
 except ImportError:
     pass
 
-# Configure the feed export. Relies on the AWS_* variables being correctly set.
-FEED_URI = AWS_URI_PREFIX+'main/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
+# Configure the feed export. Saving to S3 relies on the AWS_* variables being
+# correctly set. See https://docs.scrapy.org/en/latest/topics/feed-exports.html
+# for non-AWS options.
+try:
+    FEED_URI = AWS_URI_PREFIX+'main/JSONLinesItems/%(name)s/%(time)s-%(name)s.jsonl'
+except NameError:
+    logging.warning("Please set a suitable destination for the output files in "
+                    "settings.py; writing to the current directory by default")
+    FEED_URI = str(Path.cwd())+'/jsonloutput/%(name)s/%(time)s-%(name)s.jsonl'
 FEED_FORMAT = 'jsonlines'
 # FEED_EXPORT_FIELDS = list(NewsItem().fields.keys()) # Critical for CSV
 FEED_STORE_EMPTY = True
