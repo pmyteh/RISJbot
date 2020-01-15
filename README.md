@@ -2,6 +2,22 @@
 A scrapy project to extract the text and metadata of articles from news
 websites.
 
+This should provide much of the structure and parsing code needed to fetch
+from arbitrary news websites. It may work out-of-the-box on some or more of
+the sites with specific spiders already written (see below) but be aware that
+web scrapers are by their nature somewhat brittle: they depend on the
+underlying format and structure of each site's pages, and when these are
+changed they tend to break. Although RISJbot has a fallback scraper that does
+a reasonable job with arbitrary news pages, it's not a substitute for a
+hand-tailored spider.
+
+Having some degree of experience with Python would be very helpful. If sites
+update their templates or you want to add a new site to the collection then
+some coding will be necessary. I've tried to ensure that the existing code
+is well commented. The Scrapy docs are themselves quite good if you find
+yourself needing to understand what is going on behind the scenes.
+
+
 ## Installation
 
 This is a Scrapy project, so first you need a working Scrapy installation:
@@ -15,7 +31,11 @@ Third, customise a crawler for the site you want to scrape. There are some
 working examples in the project, so the 'guardian' crawler fetches articles
 from Britain's *The Guardian*, for example.
 
-The third thing is to run the crawler: `scrapy runspider guardian` will fetch
+Fourth, use pip to install the dependencies in `requirements.txt` (currently
+`dateparser`, `extruct[rdfa]`, `textblob`, `pronouncing`,
+`scrapy-dotpersistence`, and `readability-lxml`.
+
+The final thing is to run the crawler: `scrapy crawl guardian` will fetch
 its way through *The Guardian*. But at this point it's basically an ordinary
 Scrapy installation, and the regular Scrapy docs should see you through.
 
