@@ -19,6 +19,7 @@ import os
 import logging
 
 BOT_NAME = 'RISJbot'
+LOG_LEVEL = 'INFO' # ('DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL') 
 
 SPIDER_MODULES = ['RISJbot.spiders']
 NEWSPIDER_MODULE = 'RISJbot.spiders'
@@ -223,7 +224,7 @@ ITEM_PIPELINES = {
 
 # Flag to determine storage of rawpagegzipb64 (to turn off for debugging)
 # TN 2017/03/27
-STRIPRAWPAGE_ENABLED = False
+STRIPRAWPAGE_ENABLED = True
 
 # A contract promising *not* to collect data for a particular field
 # TN: 2017-02-27

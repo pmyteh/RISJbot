@@ -23,7 +23,7 @@ yourself needing to understand what is going on behind the scenes.
 This is a Scrapy project, so first you need a working Scrapy installation:
 https://docs.scrapy.org/en/latest/intro/install.html
 
-The second thing to do is to clone RISJbot and edit settings.py to set things
+The second thing to do is to clone RISJbot and edit `settings.py` to set things
 up how you want them. The example settings file does most things sensibly.
 Make sure you set up a sensible place for the crawl data to be put.
 
@@ -38,6 +38,10 @@ Fourth, use pip to install the dependencies in `requirements.txt` (currently
 The final thing is to run the crawler: `scrapy crawl guardian` will fetch
 its way through *The Guardian*. But at this point it's basically an ordinary
 Scrapy installation, and the regular Scrapy docs should see you through.
+
+Output will be sent in JSONLines format to the S3 bucket you configured in
+`settings.py`, or (if you haven't given credentials) to a `jsonloutput`
+directory in the current directory.
 
 
 ## Spiders
@@ -217,4 +221,6 @@ subjectivity scores for the bodytext of each item.
 ### StripRawPage
 RISJbot is configured to store a Base64-encoded gzipped version of the
 raw Response in its JSON output by default. This pipeline class removes
-it when needed (for various reasons).
+it when needed (for various reasons). It is now enabled by default in
+`settings.py`, so if you want the raw Response saved then you will need to set
+`STRIPRAWPAGE_ENABLED` to False.
