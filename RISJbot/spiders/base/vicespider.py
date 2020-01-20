@@ -19,7 +19,11 @@ class ViceSpider(NewsSplashCrawlSpider):
        unfortunately the /latest page is basically blank unless the JS is
        executed. So we fall back on Splash, a scriptable headless Python
        browser that works well with Scrapy (and can be obtained hosted on
-       ScrapingHub for those going the cloud route)."""
+       ScrapingHub for those going the cloud route).
+
+       Note that there is also a GraphQL endpoint at
+       https://www.vice.com/api/v1/graphql that may be suitable for an
+       entirely different approach."""
     allowed_domains = ['vice.com']
 
     def parse_page(self, response):

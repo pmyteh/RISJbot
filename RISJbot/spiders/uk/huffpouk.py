@@ -9,7 +9,7 @@ class HuffPoUKSpider(HuffPoSpider):
     name = 'huffpouk'
     # allowed_domains = ['huffingtonpost.co.uk']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    sitemap_urls = ['http://www.huffingtonpost.co.uk/original-content-map.xml'] 
+    sitemap_urls = ['https://www.huffingtonpost.co.uk/sitemaps/sitemap-google-news.xml']
 
     def parse_page(self, response):
         """@url http://www.huffingtonpost.co.uk/entry/child-car-seat-law-booster-seat-ban_uk_58b42602e4b060480e09c87d

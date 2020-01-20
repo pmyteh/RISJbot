@@ -6,7 +6,7 @@ class BusinessInsiderDESpider(BusinessInsiderSpider):
     name = 'businessinsiderde'
     # allowed_domains = ['www.businessinsider.de']
     # A list of XML sitemap files, or suitable robots.txt files with pointers.
-    sitemap_urls = ['https://www.businessinsider.de/sitemap/google-news.xml']
+    sitemap_urls = ['https://www.businessinsider.de/post_google_news.xml']
 
     def parse_page(self, response):
         """@url http://www.businessinsider.de/cdu-und-csu-wollen-zuwanderung-von-maximal-200-000-fluechtlingen-5737380

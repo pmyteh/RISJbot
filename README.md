@@ -69,7 +69,9 @@ US and UK websites:
 * Sun
 * Telegraph
 * USA Today
-* Vice (US, UK, DE, and FR)
+* Vice (US, UK, DE, and FR. These are experimental, and require a configured
+Splash headless browser instance, with a suitable `SPLASH_URL` configured in
+`settings.py`. See `spiders/base/vice.py` for details.)
 * Washington Post
 * Yahoo! (US)
 
