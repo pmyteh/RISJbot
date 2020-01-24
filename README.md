@@ -43,6 +43,12 @@ Output will be sent in JSONLines format to the S3 bucket you configured in
 `settings.py`, or (if you haven't given credentials) to a `jsonloutput`
 directory in the current directory.
 
+If you want to load your output data into an R-based analysis framework via the
+`tm` package, there is a companion package
+[`tm.plugin.risjbot`](https://github.com/pmyteh/tm.plugin.risjbot) which does
+this easily. JSONLines libraries are readily available for other programming
+languages and workflows.
+
 
 ## Spiders
 
@@ -51,6 +57,7 @@ US and UK websites:
 * ABC
 * ~~AP~~ [currently non-functional]
 * BBC
+* Bild
 * Business Insider (US, DE, and FR)
 * Buzzfeed (US and UK, plus a global feed)
 * CBS
@@ -87,7 +94,8 @@ moves.
 
 The source of URLs to crawl is generally either a public RSS feed of new
 articles, or the sitemaps published to alert Google News of the articles
-available.
+available. You may be able to find suitable feeds through the
+[feed_seeker package](https://github.com/mitmedialab/feed_seeker).
 
 A spider class is also available for doing a link-following crawl via Splash
 (a headless browser which allows JavaScript-heavy pages to be properly

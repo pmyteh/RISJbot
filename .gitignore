@@ -4,4 +4,4 @@ RISJbot/splash_credentials.py
 project.egg-info/*
 build/*
 **/*.pyc
-**/risj*.py
+RISJbot/spiders/local/*.py
