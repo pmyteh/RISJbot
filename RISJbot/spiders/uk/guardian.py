@@ -2,6 +2,8 @@
 from RISJbot.spiders.newssitemapspider import NewsSitemapSpider
 from RISJbot.spiders.newsspecifiedspider import NewsSpecifiedSpider
 from RISJbot.loaders import NewsLoader
+# Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
+from RISJbot.utils import mutate_selector_del
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
@@ -12,7 +14,17 @@ class GuardianParser(object):
         @scrapes bodytext fetchtime firstpubtime headline bylines
         @scrapes section source summary url modtime keywords
         """
-        l = NewsLoader(response=response)
+        s = response.selector
+        # Remove any content from the tree before passing it to the loader.
+        # There aren't native scrapy loader/selector methods for this.
+        # CSS is better for operating on classes than XPath, otherwise
+        # either will do.
+        #    1. Strip the submeta footer
+        mutate_selector_del(s, 'xpath', '//div[contains(@class, "submeta")]')
+        #    2. All the <aside> boxes
+        mutate_selector_del(s, 'xpath', '//aside')
+
+        l = NewsLoader(selector=s)
 
         l.add_value('source', 'The Guardian')
 

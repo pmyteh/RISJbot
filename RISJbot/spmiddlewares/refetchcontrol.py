@@ -200,7 +200,7 @@ class RefetchControl(object):
 
     def _schedule_url(self, url, meta, spider):
         # This is slightly problematic (but unavaoidable).
-        # engine.crawl() is not a published interface, and is nocannot VACUUM from within a transactiont
+        # engine.crawl() is not a published interface, and is not
         # to be considered stable per the devs, though there is a
         # good deal of published code that uses it to schedule URLs
         # like this in the absence of an official alternative.
