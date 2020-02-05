@@ -27,6 +27,7 @@ class NewsItem(scrapy.Item):
     previousfetches = scrapy.Field()
     notes = scrapy.Field()
     language = scrapy.Field()
+    articleid = scrapy.Field()
     # The following are added by pipeline
     wordcount = scrapy.Field()
     sentiment = scrapy.Field()
