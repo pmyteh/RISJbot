@@ -398,14 +398,23 @@ class NewsLoader(ItemLoader):
         """Extracts content using readability-lxml. This is non-specific,
            but flexible, and a good fallback."""
 
+        # Don't do the readability parsing (which is comparatively expensive)
+        # unless it's needed
+        if self.get_output_value('headline') and self.get_output_value('bodytext'):
+            return
+
         readified_doc = readability.readability.Document(response.text)
 
-        # There is a .title() method, but short_title() strips chaff
-        self.add_value('headline',
-                       readified_doc.short_title())
+        if not self.get_output_value('headline'):
+            logger.debug(f'Using readability fallback for headline: {self.get_output_value("url")}')
+            # There is a .title() method, but short_title() strips chaff
+            self.add_value('headline',
+                           readified_doc.short_title())
 
-        reparsed = lxml.html.fromstring(readified_doc.summary())
+        if not self.get_output_value('bodytext'):
+            logger.debug(f'Using readability fallback for bodytext: {self.get_output_value("url")}')
+            reparsed = lxml.html.fromstring(readified_doc.summary())
 
-        self.add_value('bodytext',
-                       reparsed.xpath('//body//text()')
-                      )
+            self.add_value('bodytext',
+                           reparsed.xpath('//body//text()')
+                          )
