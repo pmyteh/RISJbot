@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from RISJbot.spiders.newssitemapspider import NewsSitemapSpider
+from RISJbot.spiders.newsspecifiedspider import NewsSpecifiedSpider
 from RISJbot.loaders import NewsLoader
 from scrapy.loader.processors import Identity, TakeFirst
 from scrapy.loader.processors import Join, Compose, MapCompose
 
-class GuardianSpider(NewsSitemapSpider):
-    name = "guardian"
-    # allowed_domains = ["guardian.com"]
-    sitemap_urls = ['https://www.theguardian.com/sitemaps/news.xml']
-
+class GuardianParser(object):
     def parse_page(self, response):
         """@url https://www.theguardian.com/business/2017/feb/20/how-unilever-foiled-kraft-heinzs-115m-takeover-bid-warren-buffett
         @returns items 1
@@ -49,3 +46,11 @@ class GuardianSpider(NewsSitemapSpider):
 #        #item['bylines'] = response.xpath('//p[@class="byline"]//span[@itemprop="name"]/text()').extract(),
 
         return l.load_item()
+
+class GuardianSpider(GuardianParser, NewsSitemapSpider):
+    name = "guardian"
+    sitemap_urls = ['https://www.theguardian.com/sitemaps/news.xml']
+
+class GuardianSpecifiedSpider(GuardianParser, NewsSpecifiedSpider):
+    name = "guardianspecified"
+

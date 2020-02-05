@@ -66,6 +66,10 @@ try:
 except ImportError:
     pass
 
+# Configure an input file of URLs to fetch, only for use with the
+# SpecifiedSpider classes.
+# SPECIFIED_URLS_FILE = '/path/to/inputfile.txt'
+
 # Configure the feed export. Saving to S3 relies on the AWS_* variables being
 # correctly set. See https://docs.scrapy.org/en/latest/topics/feed-exports.html
 # for non-AWS options.

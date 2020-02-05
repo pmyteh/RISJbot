@@ -97,6 +97,10 @@ articles, or the sitemaps published to alert Google News of the articles
 available. You may be able to find suitable feeds through the
 [feed_seeker package](https://github.com/mitmedialab/feed_seeker).
 
+As an alternative, it's possible to crawl a specified list of URLs from a
+file. This is implemented in the NewsSpecifiedSpider class; see
+`spiders/uk/guardian.py` for a working example.
+
 A spider class is also available for doing a link-following crawl via Splash
 (a headless browser which allows JavaScript-heavy pages to be properly
 handled).
