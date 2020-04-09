@@ -63,20 +63,14 @@ class RefetchControl(object):
         self.reset = s.getbool('REFETCHCONTROL_RESET', False)
         # Grotty: see _schedule_url()
         self.rqcallback = s.get('REFETCHCONTROL_RQCALLBACK', 'spider.parse')
+        self.debug = s.get('REFETCHCONTROL_DEBUG', True)
         self.dbs = {}
         self.stats = crawler.stats
         self.idletrawled = False
-        logger.debug("RefetchControl starting; dir: {}, "
-                     "maxfetches: {}, refetchsecs: {}, agelimitsect: {}, "
-                     "trimdb: {}, reset: {}"
-                     "".format(self.dir,
-                               self.maxfetches,
-                               self.refetchsecs,
-                               self.agelimit,
-                               self.trimdb,
-                               self.reset,
-                              )
-                    )
+        logger.debug(f"RefetchControl starting; dir: {self.dir}, "
+                     f"maxfetches: {self.maxfetches}, refetchsecs: "
+                     f"{self.refetchsecs}, agelimit: {self.agelimit}, "
+                     f"trimdb: {self.trimdb}, reset: {self.reset}")
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -88,6 +82,10 @@ class RefetchControl(object):
         crawler.signals.connect(o.spider_idle,   signal=signals.spider_idle)
         return o
 
+    def logdebug(self, msg):
+        if self.debug:
+            logger.debug(msg)
+
     def spider_opened(self, spider):
         if not os.path.exists(self.dir):
             os.makedirs(self.dir)
@@ -96,8 +94,7 @@ class RefetchControl(object):
 
         new = False
         if not os.path.isfile(dbpath):
-            logger.info("Can't find database file {}. Regenerating.".format(
-                            dbpath))
+            logger.info(f"Can't find database file {dbpath}. Regenerating.")
             # Will need regenerating
             new = True
 
@@ -116,14 +113,20 @@ class RefetchControl(object):
                         "WITHOUT ROWID")
             c.execute("CREATE INDEX idx_fetches_time ON records (fetches, time)")
             self.dbs[spider.name].commit()
+        else:
+            c = self.dbs[spider.name].cursor()
+            r = c.execute('SELECT count(*) FROM records')
+            logger.info(f"Opened RefetchControl database with "
+                        f"{r.fetchone()[0]} entries.")
+
         
     def spider_closed(self, spider):
-        logger.debug("Closing databases")
+        self.logdebug("Closing databases")
         for db in self.dbs.values():
             # Paranoia.
             db.commit()
             db.close()
-        logger.debug("Databases closed")
+        self.logdebug("Databases closed")
 
     def spider_idle(self, spider):
         """If an item is fetched once, but then disappears from the feed
@@ -141,7 +144,7 @@ class RefetchControl(object):
 
         logger.info("Trawling database for unfetched pages.")
 #        if self.trimdb:
-#            logger.debug("Keys fetched: {}".format(self.keysrqd))
+#            self.logdebug(f"Keys fetched: {self.keysrqd}")
 
         keystodelete = set()
 
@@ -156,24 +159,17 @@ class RefetchControl(object):
 #                             (cutofft, cutoffold, self.maxfetches)):
         for row in c.execute('SELECT * FROM records'):
             key, url, nf, t = row
-#            logger.debug("key: {}, url: {}, nf: {}, t: {}, (cutofft: {}, "
-#                         "cutoffold: {}, nf: {})".format(key, url, nf, t,
-#                                                         cutofft, cutoffold,
-#                                                         nf))
+#            self.logdebug(f"key: {key}, url: {url}, nf: {nf}, t: {t}, "
+#                          f"(cutofft: {cutofft}, cutoffold: {cutoffold}, "
+#                          f"nf: {nf})"
             if t <= cutofft and t > cutoffold and nf < self.maxfetches:
                 # This is eligible
                 tdiff = datetime.datetime.utcnow() - t
-                logger.debug("Scheduling refetch from database crawl "
-                             "({} fetches, last at {}, {:.0f} seconds ago, "
-                             "min/max secs {}/{}): {}".format(
-                                     nf,
-                                     t.isoformat(),
-                                     tdiff.total_seconds(),
-                                     self.refetchsecs,
-                                     self.agelimit,
-                                     url,
-                                 )
-                            )
+                self.logdebug(f"Scheduling refetch from database crawl "
+                              f"({nf} fetches, last at {t.isoformat()}, "
+                              f"{tdiff.total_seconds():.0f} seconds ago, "
+                              f"min/max secs {self.refetchsecs}/"
+                              f"{self.agelimit}): {url}")
                 self._schedule_url(url,
                                    {'refetchcontrol_trawled': True,
                                     'refetchcontrol_key': key,
@@ -186,7 +182,7 @@ class RefetchControl(object):
         if self.trimdb:
             with self.dbs[spider.name]:
                 for k in keystodelete:
-                    logger.debug("Deleting: {}".format(k))
+                    self.logdebug(f"Deleting: {k}")
                     query = 'DELETE FROM records WHERE key = ?'
                     self.dbs[spider.name].execute(query, (k,))
                     self.stats.inc_value('refetchcontrol/dbkeystrimmed',
@@ -195,7 +191,7 @@ class RefetchControl(object):
             # because DotscrapyPersistence is used
             self.dbs[spider.name].execute('VACUUM')
         self.idletrawled = True
-        logger.debug("Trawl finished.")
+        self.logdebug("Trawl finished.")
 
 
     def _schedule_url(self, url, meta, spider):
@@ -235,7 +231,7 @@ class RefetchControl(object):
             self.keysrqd.update([key])
 
         if 'refetchcontrol_pass' in r.meta:
-            logger.debug('Passing: {}'.format(r))
+            self.logdebug(f"Passing: {r}")
             self.stats.inc_value('refetchcontrol/passed', spider=spider)
             return r
 
@@ -248,7 +244,7 @@ class RefetchControl(object):
 
         if l is None:
             # First fetch. Log and return.
-            logger.debug("First fetch: {}".format(r))
+            self.logdebug(f"First fetch: {r}")
             if self.stats:
                 self.stats.inc_value('refetchcontrol/firstfetch',
                                      spider=spider)
@@ -265,32 +261,18 @@ class RefetchControl(object):
                tdiff.total_seconds() > self.agelimit):
             # No. Drop.
             if nf < self.maxfetches:
-                logger.debug("Not fetching ({}/{} "
-                             "fetches, last at {}, {:.0f} seconds "
-                             "ago, min secs {}, max secs {}): {}".format(
-                                     nf,
-                                     self.maxfetches,
-                                     t.isoformat(),
-                                     tdiff.total_seconds(),
-                                     self.refetchsecs,
-                                     self.agelimit,
-                                     r,
-                                 )
-                            )
+                self.logdebug(f"Not fetching ({nf}/{self.maxfetches} "
+                              f"fetches, last at {t.isoformat}, "
+                              f"{tdiff.total_seconds():.0f} seconds "
+                              f"ago, min secs {self.refetchsecs}, "
+                              f"max secs {self.agelimit}): {r}")
             self.stats.inc_value('refetchcontrol/skipped', spider=spider)
             return None
 
         # Yes. Log, add to stats, return
-        logger.debug("Refetching ({} fetches, "
-                     "last at {}, {:.0f} seconds ago, "
-                     "min secs {}) {}".format(
-                             nf,
-                             t.isoformat(),
-                             tdiff.total_seconds(),
-                             self.refetchsecs,
-                             r,
-                         )
-                    )
+        self.logdebug(f"Refetching ({nf} fetches, "
+                      f"last at {t.isoformat()}, {tdiff.total_seconds():.0f} "
+                      f"seconds ago, min secs {self.refetchsecs}): {r}")
         r.meta['refetchcontrol_previous'] = nf
         self.stats.inc_value('refetchcontrol/refetched', spider=spider)
         return r
@@ -310,9 +292,8 @@ class RefetchControl(object):
         try:
             key = response.meta['refetchcontrol_key']
         except KeyError:
-            logger.warning("No meta['refetchcontrol_key'] for {}: {}".format(
-                                response, response.meta)
-                          )
+            logger.warning(f"No meta['refetchcontrol_key'] for {response}: "
+                           f"{response.meta}")
             key = self._get_key(response.request)
         c.execute(query, (key,))
         l = c.fetchone()

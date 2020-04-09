@@ -55,13 +55,13 @@ class NewsSitemapSpider(SitemapSpider):
                     for r, c in self._cbs:
                         if r.search(loc):
                             try:
+                                self.logger.debug(f'Queuing {loc}')
                                 yield self.url_to_request(loc,
                                                           callback=c,
                                                           meta=meta)
                                 break
                             except Exception as e:
-                                self.logger.error("Failed to queue {}: {}".format(
-                                                    loc, e))
+                                self.logger.error(f'Failed to queue {loc}: {e}')
 
     def url_to_request(self, url, callback=None, meta={}):
         if callback is None:
