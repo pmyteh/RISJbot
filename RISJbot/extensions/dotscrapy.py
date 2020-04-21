@@ -10,7 +10,14 @@ logger = logging.getLogger(__name__)
 class FlexibleDotScrapyPersistence(DotScrapyPersistence):
     """A subclass of scrapy_dotpersistence.DotScrapyPersistence (==0.3.0)
        to allow the content to be backed up to our bucket rather than
-       ScrapingHub's. Grotty in the absence of a fixed interface."""
+       ScrapingHub's. Grotty in the absence of a fixed interface.
+       
+       FIXME: According to the docs at https://support.scrapinghub.com/support/solutions/articles/22000225188-syncing-your-scrapy-folder-to-an-s3-bucket-using-dotscrapy-persistence
+              the AWS bucket etc. *can* be overriden using the ADDONS_*
+              settings like ADDONS_S3_BUCKET, but only if set spider-by-spider
+              rather than for the project as a whole. This seems obviously
+              crazy, but may be better than this subclass, which is also
+              obviously crazy."""
     @classmethod
     def from_crawler(cls, crawler):
         settings = crawler.settings

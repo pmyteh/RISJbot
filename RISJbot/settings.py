@@ -175,12 +175,6 @@ STRIPNULL_ENABLED = True
 EQUIVALENTDOMAINS_ENABLED = True
 EQUIVALENTDOMAINS_MAPPINGS = {'www.cnn.com': 'edition.cnn.com'}
 
-# Disable the dupe filter: BaseDupeFilter is a no-op. If a filter is
-# applied on top of RefetchControl, they both limit
-# recrawls. This interaction may be undesirable (but is probably fine).
-# (TN, 2017-02-14)
-#DUPEFILTER_CLASS = 'scrapy.dupefilters.BaseDupeFilter'
-
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
 EXTENSIONS = {
@@ -200,6 +194,9 @@ EXTENSIONS = {
 #        In practice, they seem to be being overridden by ScrapingHub, which is
 #        a little useless. So we have forked DotScrapyPersistence as
 #        FlexibleDotScrapyPersistence, enabled below.
+# NOTE:  According to the docs at https://support.scrapinghub.com/support/solutions/articles/22000225188-syncing-your-scrapy-folder-to-an-s3-bucket-using-dotscrapy-persistence
+#        this *can* be overriden on scrapinghub, but only if set spider-by-
+#        spider rather than for the project as a whole. That may be preferable.
 #DOTSCRAPY_ENABLED = True
 #ADDONS_AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
 #ADDONS_AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
