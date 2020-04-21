@@ -70,7 +70,8 @@ class RefetchControl(object):
         logger.debug(f"RefetchControl starting; dir: {self.dir}, "
                      f"maxfetches: {self.maxfetches}, refetchsecs: "
                      f"{self.refetchsecs}, agelimit: {self.agelimit}, "
-                     f"trimdb: {self.trimdb}, reset: {self.reset}")
+                     f"trimdb: {self.trimdb}, reset: {self.reset}, "
+                     f"debug: {self.debug}")
 
     @classmethod
     def from_crawler(cls, crawler):
