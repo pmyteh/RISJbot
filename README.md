@@ -125,7 +125,7 @@ control over repeated fetching:
 * The option of fetching (limited numbers of) copies of an item, 
   at intervals of not less than a given time. This allows some sane change
   detection.
-* A mechanism for ensuring complete fetches, by trawling RefetchControl's
+* A mechanism is there for ensuring complete fetches, by trawling RefetchControl's
   database for insufficiently-fetched pages and scheduling them.
 
 Depends on sqlite3 instead of bsddb3.
