@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+from RISJbot.spiders.newssitemapspider import NewsSitemapSpider
+from RISJbot.loaders import NewsLoader
+# Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
+from RISJbot.utils import mutate_selector_del
+from itemloaders.processors import Identity, TakeFirst
+from itemloaders.processors import Join, Compose, MapCompose
+
+# USAGE: The first class carries out the parsing; it is inherited by the other
+# (spider) classes, which each have different ways of discovering articles to 
+# crawl. Uncomment and populate one or more of these for use.
+
+class ${classname}Parser(object):
+    def parse_page(self, response):
+        """@url <newsurl>
+        @returns items 1
+        @scrapes bodytext bylines fetchtime firstpubtime modtime headline
+        @scrapes keywords section source summary url language
+        @noscrapes bylines firstpubtime modtime
+        @noscrapes keywords section summary language
+        """
+        s = response.selector
+        # Remove any content from the tree before passing it to the loader.
+        # There aren't native scrapy loader/selector methods for this.
+        # CSS is better for operating on classes than XPath, otherwise
+        # either will do.        
+        #mutate_selector_del(s, 'xpath' '//*[@id='someid']')
+        #mutate_selector_del(s, 'css', '.classname')
+
+        l = NewsLoader(selector=s)
+
+        # Add a number of items of data that should be standardised across
+        # providers. Can override these (for TakeFirst() fields) by making
+        # l.add_* calls above this line, or supplement gaps by making them
+        # below.
+        l.add_fromresponse(response)
+        l.add_htmlmeta()
+        l.add_schemaorg(response)
+        l.add_opengraph()
+        l.add_scrapymeta(response)
+        l.add_readability(response)
+        #l.add_schemaorg_bylines()
+        #l.add_dublincore()
+
+        return l.load_item()
+ 
+# class NewsSitemap$classname(${classname}Parser, NewsSitemapSpider):
+#     name = "${name}sitemap"
+#     # allowed_domains = ['$domain']
+#     # A list of XML sitemap files, or suitable robots.txt files with pointers.
+#     sitemap_urls = ['https://$domain/robots.txt']
+
+# class NewsRSS$classname(${classname}Parser, NewsRSSFeedSpider):
+#     name = '${name}rss'
+#     # allowed_domains = ['$domain']
+#     start_urls = ['http://$domain/path/to/rss.xml']
+
+# class NewsSpecified$classname($classname Parser, NewsSpecifiedSpider):
+#    name = "$name specified"
+
+# class NewsCSV$classname(${classname}Parser, NewsCSVFeedSpider):
+#     name = '${name}csv'
+#     # allowed_domains = ['$domain']
+#     start_urls = ['http://$domain/path/to/feed.csv']
+#     field = 'url'
+#     delimiter = '\t'
+#     quotechar = "'"
+#     # headers = ['url', 'foo', 'bar']
+
+# class NewsCrawl$classname(${classname}Parser, CrawlSpider):
+#     name = '${name}crawl'
+#     allowed_domains = ['$domain']
+#     start_urls = ['http://$domain/']
+# 
+#     rules = (
+#         Rule(LinkExtractor(allow=r'Items/'), callback='parse_page', follow=True),
+#     )
+
