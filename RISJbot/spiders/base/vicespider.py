@@ -5,8 +5,8 @@ from RISJbot.loaders import NewsLoader
 from RISJbot.utils import mutate_selector_del
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
-from scrapy.loader.processors import Identity, TakeFirst
-from scrapy.loader.processors import Join, Compose, MapCompose
+from itemloaders.processors import Identity, TakeFirst
+from itemloaders.processors import Join, Compose, MapCompose
 
 class ViceSpider(NewsSplashCrawlSpider):
     """This crawler is tricky on two separate grounds. First, Vice don't

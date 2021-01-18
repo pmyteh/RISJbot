@@ -4,8 +4,8 @@ from RISJbot.spiders.newsspecifiedspider import NewsSpecifiedSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
 from RISJbot.utils import mutate_selector_del
-from scrapy.loader.processors import Identity, TakeFirst
-from scrapy.loader.processors import Join, Compose, MapCompose
+from itemloaders.processors import Identity, TakeFirst
+from itemloaders.processors import Join, Compose, MapCompose
 
 class GuardianParser(object):
     def parse_page(self, response):

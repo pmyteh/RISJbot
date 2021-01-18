@@ -19,8 +19,8 @@ from w3lib.html import remove_tags, remove_comments
 from RISJbot.items import NewsItem
 from RISJbot.metadata import RISJMetadataExtractor
 from scrapy.loader import ItemLoader
-from scrapy.loader.processors import Identity, TakeFirst
-from scrapy.loader.processors import Join, Compose, MapCompose
+from itemloaders.processors import Identity, TakeFirst
+from itemloaders.processors import Join, Compose, MapCompose
 
 # readability is very chatty
 readability.readability.log.setLevel('WARNING')

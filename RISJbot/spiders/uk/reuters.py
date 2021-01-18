@@ -3,8 +3,8 @@ from RISJbot.spiders.newssitemapspider import NewsSitemapSpider
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
 from RISJbot.utils import mutate_selector_del
-from scrapy.loader.processors import Identity, TakeFirst
-from scrapy.loader.processors import Join, Compose, MapCompose
+from itemloaders.processors import Identity, TakeFirst
+from itemloaders.processors import Join, Compose, MapCompose
 import re
 import datetime
 
