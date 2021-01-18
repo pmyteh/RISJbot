@@ -1,5 +1,5 @@
-dateparser==0.7.4
-extruct==0.9.0
+dateparser==1.0.0
+extruct==0.12.0
 textblob==0.15.3
 pronouncing==0.2.0
 #nltk==3.2.2
