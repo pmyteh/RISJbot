@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from RISJbot.spiders.newssitemapspider import NewsSitemapSpider
+from RISJbot.spiders.newsrssfeedspider import NewsRSSFeedSpider
+from RISJbot.spiders.newsspecifiedspider import NewsSpecifiedSpider
+from RISJbot.spiders.newscsvfeedspider import NewsCSVFeedSpider
+from scrapy.spiders import CrawlSpider, Rule
 from RISJbot.loaders import NewsLoader
 # Note: mutate_selector_del_xpath is somewhat naughty. Read its docstring.
 from RISJbot.utils import mutate_selector_del
@@ -55,8 +59,8 @@ class ${classname}Parser(object):
 #     # allowed_domains = ['$domain']
 #     start_urls = ['http://$domain/path/to/rss.xml']
 
-# class NewsSpecified$classname($classname Parser, NewsSpecifiedSpider):
-#    name = "$name specified"
+# class NewsSpecified$classname(${classname}Parser, NewsSpecifiedSpider):
+#    name = "${name}specified"
 
 # class NewsCSV$classname(${classname}Parser, NewsCSVFeedSpider):
 #     name = '${name}csv'
