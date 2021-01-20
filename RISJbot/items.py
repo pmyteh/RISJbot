@@ -28,6 +28,8 @@ class NewsItem(scrapy.Item):
     notes = scrapy.Field()
     language = scrapy.Field()
     articleid = scrapy.Field()
+    rawcomments = scrapy.Field()
+    comments = scrapy.Field()
     # The following are added by pipeline
     wordcount = scrapy.Field()
     sentiment = scrapy.Field()

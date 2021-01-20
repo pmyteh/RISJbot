@@ -125,8 +125,10 @@ class NewsLoader(ItemLoader):
                           )
     bylines_out = Compose(TakeFirst(), lambda x: x.split(','))
 
-    # Post out any notes we've got.
+    # Post out any notes and comments we've got.
     notes_out = Identity()
+    rawcomments_out = Identity()
+    comments_out = Identity()
 
     # TODO: Consider converting these to use a proper RDFa/microdata parser
     #       like rdflib. scrapinghub/extruct looks ideal.
