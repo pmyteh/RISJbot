@@ -17,6 +17,11 @@ some coding will be necessary. I've tried to ensure that the existing code
 is well commented. The Scrapy docs are themselves quite good if you find
 yourself needing to understand what is going on behind the scenes.
 
+You should be aware that this was written to support the author's academic
+research into online news. It is still actively (if slowly) developed
+for that purpose, but it is not production-level code and comes with even
+fewer guarantees than most Free software.
+
 
 ## Installation
 
@@ -32,8 +37,8 @@ working examples in the project, so the 'guardian' crawler fetches articles
 from Britain's *The Guardian*, for example.
 
 Fourth, use pip to install the dependencies in `requirements.txt` (currently
-`dateparser`, `extruct[rdfa]`, `textblob`, `pronouncing`,
-`scrapy-dotpersistence`, and `readability-lxml`.
+specific versions of `dateparser`, `extruct`, `textblob`, `pronouncing`,
+`scrapy-dotpersistence`, `scrapy-splash` and `readability-lxml`.
 
 The final thing is to run the crawler: `scrapy crawl guardian` will fetch
 its way through *The Guardian*. But at this point it's basically an ordinary
@@ -46,8 +51,10 @@ directory in the current directory.
 If you want to load your output data into an R-based analysis framework via the
 `tm` package, there is a companion package
 [`tm.plugin.risjbot`](https://github.com/pmyteh/tm.plugin.risjbot) which does
-this easily. JSONLines libraries are readily available for other programming
-languages and workflows.
+this easily. From there it's straightforward to convert it for use with
+`quanteda`, a more modern (and more actively maintained) R-based ecosystem.
+JSONLines libraries are also readily available for other programming languages
+and workflows.
 
 
 ## Spiders
@@ -67,6 +74,7 @@ US and UK websites:
 * Guardian
 * Huffington Post (US, ~~UK~~, and FR) [UK currently non-functional]
 * Independent
+* Liverpool Echo [including experimental comment scraping support]
 * Metro
 * Mirror
 * NBC
@@ -222,7 +230,7 @@ article bodies. Valid only in English, partly as the tests don't
 transfer to other languages well, and partly because we rely on the
 CMU pronounciation dictionary for syllable counting, which is only
 available in en-US.
-       
+
 Note that this pipeline class plays badly with
 ScrapingHub (as it requires megabytes of NLTK data which needs to be
 fetched from the web or synced with S3 on each run, in the absence
