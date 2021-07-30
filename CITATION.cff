@@ -1,0 +1,10 @@
+cff-version: 1.1.0
+message: "The preferred academic citation for this software is to the archived Zenodo snapshot."
+authors:
+  - family-names: Nicholls
+    given-names: Tom
+    orcid: https://orcid.org/0000-0002-6971-8614
+title: "RISJbot: A scrapy project to extract the text and metadata of articles from news websites"
+version: 1.1.0
+doi: 10.5281/zenodo.1341873
+date-released: 2018-08-08
